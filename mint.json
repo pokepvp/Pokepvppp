@@ -101,5 +101,9 @@
   "/",
   "/deploy.html"
  ],
- "agentBriefing": "https://pokepvp.fun/llms.txt"
+ "agentBriefing": "https://pokepvp.fun/llms.txt",
+ "x": {
+  "handle": "@Pokepvp_Node",
+  "url": "https://x.com/Pokepvp_Node"
+ }
 }
