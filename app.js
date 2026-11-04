@@ -381,16 +381,14 @@ async function claimAllNodes() {
 
 function buildAgentPrompt(editionIndex) {
   const edition = EDITIONS[editionIndex];
-  const address = contractsReady() ? NFT_CONTRACT_ADDRESS : '<POKEPVP_NODE_CONTRACT_ADDRESS — filled in after deployment>';
-  const starterCheck = editionIndex === 0 ? 'freeUsed(your wallet) = false, ' : '';
-  const valueNote = editionIndex === 0 ? 'Starter is free: send exactly 0 BNB (gas only).' : 'Send exactly that amount — the full edition price, nothing extra.';
-  return `Mint 1 Pokepvp Creature NFT on BNB Chain — edition ${editionIndex} (${edition.name}).
-Contract: ${address}.
-First check on-chain: mintOpen() = true, totalMinted() < 10000, ${starterCheck}and editionPrice(${editionIndex}) = ${edition.priceBNB} BNB.
-If any check fails, stop and tell me — never switch editions or pay a different amount.
-Then call mint(${editionIndex}) with exactly ${edition.priceBNB} BNB as the transaction value, gasLimit 600000. ${valueNote}
-The node mines ${edition.ratePerDay} $PVP per day from the moment it is minted; claim mined $PVP any time with claim(tokenId).
-Do it now — no preview needed. Reply with the transaction link when done.`;
+  const address = contractsReady() ? NFT_CONTRACT_ADDRESS : '<POKEPVP_NODE_CONTRACT_ADDRESS \u2014 filled in after deployment>';
+  const priceText = editionIndex === 0 ? 'FREE' : `${edition.priceBNB} BNB`;
+  const checks = editionIndex === 0
+    ? 'Check mintOpen() = true and freeUsed(your wallet) = false'
+    : `Check mintOpen() = true and editionPrice(${editionIndex}) = ${edition.priceBNB} BNB`;
+  return `Mint 1 Pokepvp NFT (${edition.name}, ${priceText}) on BNB Chain.
+Contract: ${address}
+${checks}, then call mint(${editionIndex}) with ${edition.priceBNB} BNB, gasLimit 600000. It mines ${edition.ratePerDay} $PVP/day. Reply with the tx link.`;
 }
 function currentAgentPrompt() { const sel = document.querySelector('#promptEdition'); return buildAgentPrompt(sel ? Number(sel.value) : 1); }
 function renderAgentPrompt() { const el = document.querySelector('#agentPromptText'); if (el) el.textContent = currentAgentPrompt(); }

@@ -6,6 +6,18 @@ The edition of a node is set by the price paid at mint — never by random rarit
 Machine-readable manifest (JSON): https://pokepvp.fun/mint.json
 Official X (Twitter): https://x.com/Pokepvp_Node (@Pokepvp_Node)
 
+## STATUS: MINT IS OPEN
+
+Mint opened by the owner on 2026-11-04. mintOpen() returns true on-chain - agents may mint now.
+
+## Quick command (copy-paste for AI agents)
+
+Mint 1 Pokepvp NFT (Starter, FREE) on BNB Chain.
+Contract: 0xFe565C3Dda51eC386263d3955e5455123A50477f
+Check mintOpen() = true and freeUsed(your wallet) = false, then call mint(0) with 0 BNB, gasLimit 600000. Reply with the tx link.
+
+For paid editions use the same shape with mint(1..4) and the exact prices in the Editions table below.
+
 ## Contracts
 
 - PokepvpNode (NFT): 0xFe565C3Dda51eC386263d3955e5455123A50477f

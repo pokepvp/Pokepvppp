@@ -6,6 +6,9 @@
  "standard": "ERC-721",
  "chain": "BNB Smart Chain",
  "chainId": 56,
+ "status": "LIVE - MINT OPEN",
+ "mintOpen": true,
+ "agentPrompt": "Mint 1 Pokepvp NFT (Starter, FREE) on BNB Chain.\nContract: 0xFe565C3Dda51eC386263d3955e5455123A50477f\nCheck mintOpen() = true and freeUsed(your wallet) = false, then call mint(0) with 0 BNB, gasLimit 600000. Reply with the tx link.",
  "supply": 10000,
  "tierModel": "Edition set by the price paid — never random. Paid mints unlimited per wallet (1 NFT per transaction); Starter free mint is 1 per wallet.",
  "tiers": [
@@ -78,7 +81,7 @@
  },
  "gate": "No allowlist — any wallet may mint while the owner has the mint open (mintOpen() = true). The Starter edition additionally requires that the wallet has not used its free mint (freeUsed).",
  "liveStatus": "live — mint open (opened by the owner 2026-11-04)",
- "deploymentStatus": "Deployed on BNB Chain mainnet 2026-11-04 and verified on-chain: NFT runtime matches the locally tested build (36 of 36 checks), $PVP supply 1,000,000,000 with 600,000,000 in the NFT contract as the mining reserve and 400,000,000 held by the owner. Minting starts closed; the owner opens it with setMintOpen(true).",
+ "deploymentStatus": "Deployed on BNB Chain mainnet 2026-11-04 and verified on-chain: NFT runtime matches the locally tested build (36 of 36 checks), $PVP supply 1,000,000,000 with 600,000,000 in the NFT contract as the mining reserve and 400,000,000 held by the owner. The owner opened the mint on 2026-11-04; mintOpen() reads true on-chain.",
  "contractAddress": "0xFe565C3Dda51eC386263d3955e5455123A50477f",
  "tokenAddress": "0x1687cfcA05CD3a8Ef2b4600A7De0531D305A18C4",
  "mintFunction": {
