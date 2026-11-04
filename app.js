@@ -69,13 +69,37 @@ function contractsReady() { return validContractAddress(NFT_CONTRACT_ADDRESS); }
 function pad32(hexNoPrefix) { return hexNoPrefix.padStart(64, '0'); }
 function encAddress(address) { return pad32(String(address).toLowerCase().replace(/^0x/, '')); }
 function encUint(value) { return pad32(BigInt(value).toString(16)); }
-const BSC_RPC_URL = 'https://bsc-dataseed.binance.org';
+const BSC_RPC_URLS = [
+  'https://bsc-dataseed.binance.org',
+  'https://bsc-dataseed1.defibit.io',
+  'https://bsc.publicnode.com',
+  'https://bsc-dataseed2.binance.org',
+  'https://bsc-dataseed3.binance.org'
+];
+let rpcIndex = 0;
+async function fetchRpc(url, to, data) {
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), 9000);
+  try {
+    const res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'eth_call', params: [{ to, data }, 'latest'] }), signal: ctrl.signal });
+    if (!res.ok) throw new Error('RPC HTTP ' + res.status);
+    const json = await res.json();
+    if (json.error) throw new Error(json.error.message || 'RPC error');
+    return json.result;
+  } finally { clearTimeout(timer); }
+}
 async function ethCall(to, data) {
-  if (window.ethereum) return window.ethereum.request({ method: 'eth_call', params: [{ to, data }, 'latest'] });
-  const res = await fetch(BSC_RPC_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'eth_call', params: [{ to, data }, 'latest'] }) });
-  const json = await res.json();
-  if (json.error) throw new Error(json.error.message || 'RPC error');
-  return json.result;
+  if (window.ethereum) {
+    try { return await window.ethereum.request({ method: 'eth_call', params: [{ to, data }, 'latest'] }); }
+    catch { /* wallet provider failed the read - fall through to the public RPC pool */ }
+  }
+  let lastError = null;
+  for (let attempt = 0; attempt < BSC_RPC_URLS.length; attempt++) {
+    const idx = (rpcIndex + attempt) % BSC_RPC_URLS.length;
+    try { const out = await fetchRpc(BSC_RPC_URLS[idx], to, data); rpcIndex = idx; return out; }
+    catch (e) { lastError = e; }
+  }
+  throw lastError || new Error('All BSC RPC endpoints failed');
 }
 async function readUint(to, data) { const out = await ethCall(to, data); return (!out || out === '0x') ? 0n : BigInt(out); }
 async function readBool(to, data) { return (await readUint(to, data)) !== 0n; }
@@ -253,31 +277,27 @@ let nodesRefreshBusy = false;
 async function refreshChainStats() {
   const rail = document.querySelector('#railState');
   if (!contractsReady()) { if (rail) rail.textContent = 'Contract not configured yet'; return; }
+  let okCount = 0;
+  const paint = (sel, text) => { const el = document.querySelector(sel); if (el && text != null) el.textContent = text; };
+  const jobs = [
+    (async () => { const minted = await readUint(NFT_CONTRACT_ADDRESS, SEL.totalMinted); paint('#heroMinted', minted.toString()); paint('#statMinted', `${minted.toString()} / 10,000`); okCount++; })(),
+    (async () => { const eraNow = await readUint(NFT_CONTRACT_ADDRESS, SEL.era); paint('#statEra', `Era ${eraNow.toString()}`); okCount++;
+      try { const startTs = await readUint(NFT_CONTRACT_ADDRESS, SEL.eraStarts + encUint(eraNow - 1n)); const nowS = BigInt(Math.floor(Date.now() / 1000)); if (startTs > 0n && startTs <= nowS) { const end = new Date(Number(startTs + 2592000n) * 1000); paint('#statEraNote', `hash rate minted this era, of the 150,000 era cap \u00b7 era ${eraNow} ends by ${end.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })} at the latest`); } } catch { /* era start not recorded yet */ }
+    })(),
+    (async () => { const totalRate = await readUint(NFT_CONTRACT_ADDRESS, SEL.totalHashRate); paint('#statHashRate', `${formatPVP(totalRate)} $PVP`); okCount++; })(),
+    (async () => { const eraSharesNow = await readUint(NFT_CONTRACT_ADDRESS, SEL.eraShares); paint('#statEraProgress', `${formatPVP(eraSharesNow)} / 150,000`); okCount++; })()
+  ];
+  await Promise.allSettled(jobs);
+  if (okCount > 0) { paintNftContract(); if (rail) rail.textContent = 'Arena systems nominal'; }
   try {
-    const [minted, eraNow, totalRate, eraSharesNow] = await Promise.all([
-      readUint(NFT_CONTRACT_ADDRESS, SEL.totalMinted),
-      readUint(NFT_CONTRACT_ADDRESS, SEL.era),
-      readUint(NFT_CONTRACT_ADDRESS, SEL.totalHashRate),
-      readUint(NFT_CONTRACT_ADDRESS, SEL.eraShares)
-    ]);
-    document.querySelector('#heroMinted').textContent = minted.toString();
-    document.querySelector('#statEra').textContent = `Era ${eraNow.toString()}`;
-    document.querySelector('#statHashRate').textContent = `${formatPVP(totalRate)} $PVP`;
-    document.querySelector('#statMinted').textContent = `${minted.toString()} / 10,000`;
-    document.querySelector('#statEraProgress').textContent = `${formatPVP(eraSharesNow)} / 150,000`;
-    paintNftContract();
-    try { const startTs = await readUint(NFT_CONTRACT_ADDRESS, SEL.eraStarts + encUint(eraNow - 1n)); const nowS = BigInt(Math.floor(Date.now() / 1000)); if (startTs > 0n && startTs <= nowS) { const end = new Date(Number(startTs + 2592000n) * 1000); const note = document.querySelector('#statEraNote'); if (note) note.textContent = `hash rate minted this era, of the 150,000 era cap · era ${eraNow} ends by ${end.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })} at the latest`; } } catch { /* era start not recorded yet */ }
-    if (rail) rail.textContent = 'Arena systems nominal';
     const token = await resolveTokenAddress();
     if (token) {
       const pool = await readUint(token, SEL.balanceOf + encAddress(NFT_CONTRACT_ADDRESS));
-      document.querySelector('#statPool').textContent = `${formatPVP(pool)} $PVP`;
-      if (walletAddress) {
-        const mine = await readUint(token, SEL.balanceOf + encAddress(walletAddress));
-        document.querySelector('#myPvpBalance').textContent = `${formatPVP(mine)} $PVP`;
-      }
+      paint('#statPool', `${formatPVP(pool)} $PVP`); okCount++;
+      if (walletAddress) { const mine = await readUint(token, SEL.balanceOf + encAddress(walletAddress)); paint('#myPvpBalance', `${formatPVP(mine)} $PVP`); }
     }
-  } catch { if (rail) rail.textContent = 'Contract read failed — will retry'; }
+  } catch { /* pool readout is best-effort */ }
+  if (okCount === 0 && rail) rail.textContent = 'Contract read failed \u2014 will retry';
 }
 
 async function refreshMintButtons() {
