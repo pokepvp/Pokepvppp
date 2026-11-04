@@ -1,30 +1,30 @@
-# Pokepvp — situs (Black Gold Card Arena)
+# Pokepvp — site (Black Gold Card Arena)
 
-Situs statis (HTML + vanilla JS, tanpa build step) untuk koleksi Pokepvp:
-NFT PokepvpNode (5 edisi) yang menambang token $PVP di BNB Chain, plus
-lapisan tema dari prototipe (12 spesies, rarity, koleksi demo, simulasi
-level-up, dan duel arena).
+A static site (HTML + vanilla JS, no build step) for the Pokepvp collection:
+the PokepvpNode NFT (5 editions) that mines the $PVP token on BNB Chain, plus
+the prototype theme layer (12 species, rarity, demo collection, level-up
+simulation, and the duel arena).
 
-| File | Isi |
+| File | Contents |
 |---|---|
-| `index.html` | Halaman utama: hero, Mint Lab (5 edisi), Mining (statistik + My Nodes + klaim), Collection, Growth, Duel Arena |
-| `app.js` | Semua logika: wallet EIP-1193, mint `mint(uint8)`, bacaan on-chain via `eth_call`, panel My Nodes & klaim |
-| `styles.css` | Gaya prototipe + tambahan untuk edisi, prompt agen, dan seksi Mining |
-| `deploy.html` | Alat deploy khusus owner (pola yang sama dengan Agent Card Studio) |
-| `llms.txt` | Instruksi mint + klaim yang bisa dibaca mesin / AI agent |
-| `pokepvp-mark.svg` | Logo (juga ada salinan di `public/`) |
+| `index.html` | Main page: hero, Mint Lab (5 editions), Mining (stats + My Nodes + claims), Collection, Growth, Duel Arena |
+| `app.js` | All logic: EIP-1193 wallet, `mint(uint8)`, on-chain reads via `eth_call`, My Nodes panel & claims |
+| `styles.css` | Prototype styling + additions for editions, the agent prompt, and the Mining section |
+| `deploy.html` | Owner-only deploy tool (same pattern as Agent Card Studio) |
+| `llms.txt` | Machine-readable mint + claim instructions for AI agents |
+| `pokepvp-mark.svg` | Logo (a copy also lives in `public/`) |
 
-## Mengisi alamat kontrak setelah deploy
+## Filling in the contract addresses after deploy
 
-Situs dikirim dengan alamat kosong dan menampilkan status
-"contract not configured yet" — tidak ada fitur on-chain yang aktif
-sampai langkah ini selesai.
+The site ships with empty addresses and shows a
+"contract not configured yet" status — no on-chain feature is active
+until this step is done.
 
-1. Owner men-deploy lewat `deploy.html`, urutan wajib:
-   **PokepvpNode → PvpToken (reserve = alamat NFT) → setToken** →
-   opsional `setBaseURI`.
-2. Salin dua alamat hasilnya dari kotak ringkasan `deploy.html`.
-3. Isi di bagian atas `app.js`:
+1. The owner deploys via `deploy.html`, in this required order:
+   **PokepvpNode → PvpToken (reserve = the NFT address) → setToken** →
+   optional `setBaseURI`.
+2. Copy the two resulting addresses from the `deploy.html` summary box.
+3. Fill them in at the top of `app.js`:
 
    ```js
    const POKEPVP_CONFIG = {
@@ -34,24 +34,24 @@ sampai langkah ini selesai.
    };
    ```
 
-   `tokenAddress` boleh dikosongkan — situs akan membacanya dari
-   `nft.pvpToken()`. Alternatif tanpa edit file: suntikkan
-   `window.POKEPVP_NFT_ADDRESS` sebelum `app.js` dimuat.
-4. Isi juga placeholder alamat di `llms.txt` (bagian Contracts).
-5. Muat ulang situs: statistik Mining, tombol Starter (cek `freeUsed`),
-   dan panel My Nodes akan membaca langsung dari kontrak.
+   `tokenAddress` may be left empty — the site reads it from
+   `nft.pvpToken()`. Alternative without editing the file: inject
+   `window.POKEPVP_NFT_ADDRESS` before `app.js` loads.
+4. Also fill in the address placeholders in `llms.txt` (Contracts section).
+5. Reload the site: Mining stats, the Starter button (`freeUsed` check),
+   and the My Nodes panel will read directly from the contracts.
 
-## Catatan perilaku
+## Behavior notes
 
-- Mint Starter (edisi 0) gratis — value transaksi persis 0, maks 1 per
-  wallet. Edisi berbayar memakai harga persis: Bronze 0.000284, Silver
+- Starter mint (edition 0) is free — transaction value exactly 0, max 1 per
+  wallet. Paid editions use exact prices: Bronze 0.000284, Silver
   0.000709, Gold 0.00142, Diamond 0.00426 BNB, gasLimit 600000.
-- Klaim $PVP hanya bisa dari wallet pemilik token (`claim(tokenId)`),
-  tanpa fee. Tombol Claim All mengklaim satu per satu secara berurutan.
-- Bacaan publik (statistik, My Nodes dari alamat tempel) memakai wallet
-  yang terhubung bila ada, atau RPC publik BSC sebagai cadangan.
-- Growth (level-up) dan Duel Arena adalah simulasi front-end dari
-  prototipe — tidak ada transaksi on-chain di kedua fitur itu, dan
-  salinan halamannya menyatakan itu dengan jujur.
-- Kontrak: `~/workspace/projects/pokepvp/` (README di sana menjelaskan
-  urutan deploy dan desain era/klaim; hasil uji lokal 32 PASS, 0 FAIL).
+- $PVP claims can only be made from the token owner's wallet (`claim(tokenId)`),
+  with no fee. The Claim All button claims one by one in sequence.
+- Public reads (stats, My Nodes from a pasted address) use the connected
+  wallet when present, or a public BSC RPC as fallback.
+- Growth (level-up) and Duel Arena are front-end simulations from the
+  prototype — neither feature makes an on-chain transaction, and the page
+  copy states that honestly.
+- Contracts: `~/workspace/projects/pokepvp/` (the README there explains
+  the deploy order and the era/claim design; local test result 32 PASS, 0 FAIL).

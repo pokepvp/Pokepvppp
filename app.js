@@ -17,20 +17,20 @@ let selectedId = 1;
 let pendingCard = null;
 let material = 4;
 const maxLevel = 10;
-// ── Konfigurasi kontrak ─────────────────────────────────────────────
-// Alamat diisi SETELAH owner men-deploy kedua kontrak lewat deploy.html.
-// Selama kosong (""), situs menampilkan status "kontrak belum dikonfigurasi"
-// dan semua bacaan on-chain dilewati dengan aman — tidak ada yang error.
+// ── Contract configuration ──────────────────────────────────────────
+// Addresses are filled in AFTER the owner deploys both contracts via deploy.html.
+// While empty (""), the site shows a "contract not configured yet" status
+// and every on-chain read is skipped safely — nothing errors out.
 const POKEPVP_CONFIG = {
-  nftAddress: "",   // PokepvpNode (NFT) — diisi setelah deploy
-  tokenAddress: "", // PvpToken ($PVP) — diisi setelah deploy; kosong = dibaca dari nft.pvpToken()
+  nftAddress: "",   // PokepvpNode (NFT) — filled in after deploy
+  tokenAddress: "", // PvpToken ($PVP) — filled in after deploy; empty = read from nft.pvpToken()
   chainId: "0x38"   // BNB Smart Chain Mainnet
 };
 const NFT_CONTRACT_ADDRESS = POKEPVP_CONFIG.nftAddress || window.POKEPVP_NFT_ADDRESS || "";
 const TOKEN_CONTRACT_ADDRESS = POKEPVP_CONFIG.tokenAddress || "";
 const BNB_MAINNET_CHAIN_ID = POKEPVP_CONFIG.chainId;
-// Lima edisi PokepvpNode. Edisi ditentukan oleh harga yang dibayar — tidak pernah acak.
-// priceWei harus sama persis dengan editionPrice di kontrak.
+// The five PokepvpNode editions. The edition is determined by the price paid — never random.
+// priceWei must exactly match editionPrice in the contract.
 const EDITIONS = [
   { name: "Starter", priceWei: "0",               priceBNB: "0",        ratePerDay: 10 },
   { name: "Bronze",  priceWei: "284000000000000", priceBNB: "0.000284", ratePerDay: 50 },
@@ -38,7 +38,7 @@ const EDITIONS = [
   { name: "Gold",    priceWei: "1420000000000000", priceBNB: "0.00142", ratePerDay: 600 },
   { name: "Diamond", priceWei: "4260000000000000", priceBNB: "0.00426", ratePerDay: 1500 }
 ];
-// Selector fungsi kontrak (keccak 4 byte pertama).
+// Contract function selectors (first 4 bytes of keccak).
 const SEL = {
   mint: "0x6ecd2306",          // mint(uint8)
   claim: "0x379607f5",         // claim(uint256)
@@ -96,7 +96,7 @@ async function resolveTokenAddress() {
   if (validContractAddress(TOKEN_CONTRACT_ADDRESS)) return TOKEN_CONTRACT_ADDRESS;
   if (tokenAddressCache) return tokenAddressCache;
   if (!contractsReady()) return '';
-  try { const a = await readAddress(NFT_CONTRACT_ADDRESS, SEL.pvpToken); if (validContractAddress(a) && a.toLowerCase() !== '0x0000000000000000000000000000000000000000') tokenAddressCache = a; } catch { /* token belum di-set di kontrak */ }
+  try { const a = await readAddress(NFT_CONTRACT_ADDRESS, SEL.pvpToken); if (validContractAddress(a) && a.toLowerCase() !== '0x0000000000000000000000000000000000000000') tokenAddressCache = a; } catch { /* token not set on the contract yet */ }
   return tokenAddressCache;
 }
 
@@ -136,24 +136,24 @@ function getSelected() { return cards.find(card => card.id === selectedId) || ca
 function shortenAddress(address) { return `${address.slice(0, 6)}…${address.slice(-4)}`; }
 function setWalletButton(label = 'Connect wallet') { const button = document.querySelector('#connectWallet'); if (button) button.textContent = label; }
 async function ensureBnbMainnet() {
-  if (!window.ethereum) throw new Error('MetaMask tidak ditemukan. Install MetaMask untuk membayar dengan BNB.');
+  if (!window.ethereum) throw new Error('MetaMask not found. Install MetaMask to pay with BNB.');
   const chainId = await window.ethereum.request({ method: 'eth_chainId' });
   if (chainId === BNB_MAINNET_CHAIN_ID) return true;
   try {
     await window.ethereum.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: BNB_MAINNET_CHAIN_ID }] });
   } catch (error) {
-    if (error.code !== 4902) throw new Error('Silakan pilih BNB Smart Chain Mainnet di MetaMask.');
+    if (error.code !== 4902) throw new Error('Please select BNB Smart Chain Mainnet in MetaMask.');
     await window.ethereum.request({ method: 'wallet_addEthereumChain', params: [{ chainId: BNB_MAINNET_CHAIN_ID, chainName: 'BNB Smart Chain Mainnet', nativeCurrency: { name: 'BNB', symbol: 'BNB', decimals: 18 }, rpcUrls: ['https://bsc-dataseed.binance.org/'], blockExplorerUrls: ['https://bscscan.com'] }] });
   }
   return true;
 }
 async function connectWallet() {
-  if (!window.ethereum) throw new Error('MetaMask tidak ditemukan. Install MetaMask untuk menghubungkan wallet.');
+  if (!window.ethereum) throw new Error('MetaMask not found. Install MetaMask to connect your wallet.');
   await ensureBnbMainnet();
   const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
   walletAddress = accounts[0] || null;
   setWalletButton(walletAddress ? shortenAddress(walletAddress) : 'Connect wallet');
-  showToast(walletAddress ? `Wallet connected: ${shortenAddress(walletAddress)}` : 'Wallet belum dipilih');
+  showToast(walletAddress ? `Wallet connected: ${shortenAddress(walletAddress)}` : 'No wallet selected');
   refreshMintButtons();
   const nodesInput = document.querySelector('#nodesAddress');
   if (nodesInput && walletAddress && !nodesInput.value) nodesInput.value = walletAddress;
@@ -175,26 +175,26 @@ function mintedTokenId(receipt) {
 }
 async function mintOnChain(editionIndex) {
   try {
-    if (!contractsReady()) throw new Error('Kontrak belum dikonfigurasi — alamat PokepvpNode diisi setelah owner men-deploy.');
+    if (!contractsReady()) throw new Error('Contract not configured yet — the PokepvpNode address is added after the owner deploys.');
     if (!walletAddress) await connectWallet();
     await ensureBnbMainnet();
     const from = walletAddress || (await window.ethereum.request({ method: 'eth_accounts' }))[0];
-    if (!from) throw new Error('Hubungkan wallet terlebih dahulu.');
+    if (!from) throw new Error('Connect your wallet first.');
     const edition = EDITIONS[editionIndex];
     const open = await readBool(NFT_CONTRACT_ADDRESS, SEL.mintOpen).catch(() => true);
-    if (!open) throw new Error('Mint sedang ditutup oleh owner.');
+    if (!open) throw new Error('Mint is currently closed by the owner.');
     if (editionIndex === 0) {
       const used = await readBool(NFT_CONTRACT_ADDRESS, SEL.freeUsed + encAddress(from)).catch(() => false);
-      if (used) throw new Error('Starter gratis sudah pernah di-mint dari wallet ini (maks 1 per wallet). Pilih edisi berbayar.');
+      if (used) throw new Error('The free Starter was already minted from this wallet (max 1 per wallet). Choose a paid edition.');
     }
     const data = SEL.mint + encUint(editionIndex);
     const value = '0x' + BigInt(edition.priceWei).toString(16);
-    showToast(editionIndex === 0 ? 'Konfirmasi mint Starter gratis di wallet…' : `Konfirmasi mint ${edition.name} · ${edition.priceBNB} BNB di wallet…`);
+    showToast(editionIndex === 0 ? 'Confirm the free Starter mint in your wallet…' : `Confirm the ${edition.name} mint · ${edition.priceBNB} BNB in your wallet…`);
     const hash = await window.ethereum.request({ method: 'eth_sendTransaction', params: [{ from, to: NFT_CONTRACT_ADDRESS, value, data, gas: '0x927c0' }] });
     setWalletButton(shortenAddress(from));
-    showToast('Mint dikirim — menunggu konfirmasi blockchain');
+    showToast('Mint sent — waiting for blockchain confirmation');
     const receipt = await waitForReceipt(hash);
-    if (!receipt || receipt.status !== '0x1') throw new Error('Transaksi mint gagal atau dibatalkan.');
+    if (!receipt || receipt.status !== '0x1') throw new Error('Mint transaction failed or was cancelled.');
     return { hash, tokenId: mintedTokenId(receipt) };
   } catch (error) {
     showToast(error?.message || 'Mint dibatalkan');
@@ -207,7 +207,7 @@ async function waitForReceipt(hash) {
     if (receipt) return receipt;
     await new Promise(resolve => setTimeout(resolve, 2000));
   }
-  throw new Error('Konfirmasi blockchain terlalu lama. Cek hash transaksi di BscScan.');
+  throw new Error('Blockchain confirmation is taking too long. Check the transaction hash on BscScan.');
 }
 function renderAll() {
   const selected = getSelected();
@@ -278,14 +278,14 @@ async function refreshMintButtons() {
     const used = await readBool(NFT_CONTRACT_ADDRESS, SEL.freeUsed + encAddress(walletAddress));
     starterBtn.disabled = used;
     starterBtn.innerHTML = used ? 'Starter claimed ✓ <span>1/1</span>' : 'Mint Starter — free <span>↗</span>';
-  } catch { /* biarkan tombol aktif bila bacaan gagal */ }
+  } catch { /* keep the button active if the read fails */ }
 }
 
 async function loadNodes(address, silent = false) {
   const list = document.querySelector('#nodesList');
   if (!list) return;
   if (!contractsReady()) { list.innerHTML = '<p class="nodes-empty">Contract not configured yet — node data appears after the owner deploys PokepvpNode.</p>'; return; }
-  if (!validContractAddress(address)) { if (!silent) showToast('Alamat wallet tidak valid'); return; }
+  if (!validContractAddress(address)) { if (!silent) showToast('Invalid wallet address'); return; }
   if (nodesRefreshBusy && silent) return;
   nodesRefreshBusy = true;
   currentNodesAddress = address;
@@ -317,31 +317,31 @@ async function loadNodes(address, silent = false) {
       document.querySelector('#myPvpBalance').textContent = `${formatPVP(mine)} $PVP`;
     }
   } catch (error) {
-    if (!silent) showToast(error?.message || 'Gagal membaca nodes');
+    if (!silent) showToast(error?.message || 'Failed to load nodes');
   } finally { nodesRefreshBusy = false; }
 }
 
 async function claimNode(tokenId) {
   try {
-    if (!contractsReady()) throw new Error('Kontrak belum dikonfigurasi.');
+    if (!contractsReady()) throw new Error('Contract not configured yet.');
     if (!walletAddress) await connectWallet();
     await ensureBnbMainnet();
-    if (!currentNodesAddress || !walletAddress || walletAddress.toLowerCase() !== currentNodesAddress.toLowerCase()) throw new Error('Hubungkan wallet pemilik node ini untuk klaim.');
-    showToast(`Konfirmasi klaim Node #${tokenId} di wallet…`);
+    if (!currentNodesAddress || !walletAddress || walletAddress.toLowerCase() !== currentNodesAddress.toLowerCase()) throw new Error('Connect the wallet that owns this node to claim.');
+    showToast(`Confirm the claim for Node #${tokenId} in your wallet…`);
     const hash = await window.ethereum.request({ method: 'eth_sendTransaction', params: [{ from: walletAddress, to: NFT_CONTRACT_ADDRESS, value: '0x0', data: SEL.claim + encUint(tokenId) }] });
-    showToast('Klaim dikirim — menunggu konfirmasi blockchain');
+    showToast('Claim sent — waiting for blockchain confirmation');
     const receipt = await waitForReceipt(hash);
-    if (!receipt || receipt.status !== '0x1') throw new Error('Transaksi klaim gagal atau dibatalkan.');
-    showToast(`Yield Node #${tokenId} berhasil diklaim`);
+    if (!receipt || receipt.status !== '0x1') throw new Error('Claim transaction failed or was cancelled.');
+    showToast(`Node #${tokenId} yield claimed`);
     loadNodes(currentNodesAddress, true);
     refreshChainStats();
   } catch (error) { showToast(error?.message || 'Klaim dibatalkan'); }
 }
 
 async function claimAllNodes() {
-  if (!currentNodesAddress) { showToast('Muat nodes dulu sebelum klaim massal'); return; }
+  if (!currentNodesAddress) { showToast('Load your nodes before claiming all'); return; }
   const buttons = [...document.querySelectorAll('[data-claim]')].filter(b => !b.disabled);
-  if (!buttons.length) { showToast('Tidak ada yield yang bisa diklaim saat ini'); return; }
+  if (!buttons.length) { showToast('No yield available to claim right now'); return; }
   for (const b of buttons) { await claimNode(Number(b.dataset.claim)); }
 }
 
@@ -372,7 +372,7 @@ async function mint(editionIndex) {
   const template = cards[Math.floor(Math.random() * cards.length)];
   const roll = { ...template, id: Math.max(...cards.map(c => c.id)) + 1, level: 1, power: Math.max(30, template.power - 20), status: result.tokenId == null ? 'MINTED ON-CHAIN' : `TOKEN #${result.tokenId}`, txHash: result.hash, tokenId: result.tokenId, edition: editionIndex };
   openReveal(roll, edition, result.tokenId);
-  showToast(`NFT asli berhasil dicetak${result.tokenId == null ? '' : ` · token #${result.tokenId}`} · edisi ${edition.name}`);
+  showToast(`Real NFT minted${result.tokenId == null ? '' : ` · token #${result.tokenId}`} · ${edition.name} edition`);
   refreshChainStats();
   refreshMintButtons();
   if (currentNodesAddress && walletAddress && currentNodesAddress.toLowerCase() === walletAddress.toLowerCase()) loadNodes(currentNodesAddress, true);
@@ -383,7 +383,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelector('#connectWallet').addEventListener('click', () => connectWallet().catch(error => showToast(error.message)));
   if (window.ethereum) {
     window.ethereum.on?.('accountsChanged', accounts => { walletAddress = accounts[0] || null; setWalletButton(walletAddress ? shortenAddress(walletAddress) : 'Connect wallet'); refreshMintButtons(); const ni = document.querySelector('#nodesAddress'); if (ni && walletAddress) { ni.value = walletAddress; loadNodes(walletAddress, true); } });
-    window.ethereum.on?.('chainChanged', () => { walletAddress = null; setWalletButton('Switch to BNB'); showToast('Network changed — pilih BNB Mainnet'); });
+    window.ethereum.on?.('chainChanged', () => { walletAddress = null; setWalletButton('Switch to BNB'); showToast('Network changed — please select BNB Mainnet'); });
   }
   document.querySelectorAll('[data-scroll]').forEach(button => button.addEventListener('click', () => document.getElementById(button.dataset.scroll)?.scrollIntoView({ behavior: 'smooth', block: 'start' })));
   document.querySelectorAll('[data-mint-edition]').forEach(button => button.addEventListener('click', () => mint(Number(button.dataset.mintEdition))));
@@ -403,14 +403,14 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelector('#upgradeButton').addEventListener('click', () => {
     const selected = getSelected();
     if (selected.level >= maxLevel) { showToast('This card is already at the level cap (simulation).'); return; }
-    if (material < 1) { showToast('Simulation material habis — level up tidak bisa dilanjutkan.'); return; }
+    if (material < 1) { showToast('Out of simulation material — level up cannot continue.'); return; }
     material -= 1;
     const willEvolve = !selected.evolved && selected.level + 1 >= selected.evolveAt;
     selected.level += 1;
     selected.power += willEvolve ? 28 : 16;
     if (willEvolve) { selected.evolved = true; selected.status = 'ASCENDED FORM'; }
     renderAll();
-    showToast(`${selected.name} naik ke LV ${selected.level} — simulasi lokal, tidak ada BNB yang dikirim.`);
+    showToast(`${selected.name} reached LV ${selected.level} — local simulation, no BNB is sent.`);
   });
   document.querySelector('#duelButton').addEventListener('click', () => { const selected = getSelected(); const result = document.querySelector('#duelResult'); const win = selected.power >= opponent.power; result.className = `duel-result ${win ? 'win' : 'loss'}`; result.innerHTML = `<span class="result-dot"></span><p>${win ? `${selected.name} takes the round — ${selected.power} power beats ${opponent.power}.` : `${opponent.name} holds the line — add power before the rematch.`}</p>`; showToast(win ? 'Duel result: victory' : 'Duel result: rival wins'); });
 });
