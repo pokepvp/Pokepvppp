@@ -335,7 +335,7 @@ async function claimNode(tokenId) {
     showToast(`Node #${tokenId} yield claimed`);
     loadNodes(currentNodesAddress, true);
     refreshChainStats();
-  } catch (error) { showToast(error?.message || 'Klaim dibatalkan'); }
+  } catch (error) { showToast(error?.message || 'Claim cancelled'); }
 }
 
 async function claimAllNodes() {
