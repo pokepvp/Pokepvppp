@@ -14,6 +14,7 @@ const cards = [
 ];
 const opponent = { id: 99, name: 'Gravemaw', type: 'VOID', rarity: 'RARE', level: 5, power: 72, tone: 'gravemaw', desc: 'A heavy signal hiding a precise counter.', status: 'RIVAL SIGNAL', accent: 'purple' };
 let selectedId = 1;
+let sortByPower = false;
 let pendingCard = null;
 // Card progress from level-ups persists in this browser.
 try { const prog = JSON.parse(localStorage.getItem('pokepvp_progress_v1') || '[]'); for (const p of prog) { const c = cards.find(x => x.id === p.id); if (c) { c.level = p.level; c.power = p.power; c.evolved = p.evolved; c.status = p.status; } } } catch { /* no saved progress */ }
@@ -130,7 +131,7 @@ function cardMarkup(card, compact = false, opponentCard = false) {
     <div class="card-top"><span class="card-rarity">${card.rarity} <span>0${card.id}</span></span>${compact ? '' : '<span class="card-control">⌁</span>'}</div>
     <div class="creature-stage ${rarityClass}">${creatureSvg(card.tone, card.evolved)}</div>
     <div class="card-identity"><div><div class="card-name">${card.name}</div><div class="card-sub">${card.type} / LVL ${String(card.level).padStart(2, '0')}${card.level >= maxLevel ? ' · MAX LEVEL' : ''} · ${card.evolved ? 'ASCENDED' : 'BASE FORM'}</div></div><div class="card-power"><span>POWER</span><strong>${card.power}</strong></div></div>
-    ${compact ? '' : `<div class="card-data"><div><span>RARITY</span><b>${card.rarity}</b></div><div><span>LEVEL</span><b>${String(card.level).padStart(2, '0')}</b></div><div><span>SUPPLY</span><b>${card.minted}/${card.supply}</b></div></div>`}
+    ${compact ? '' : `<div class="card-data"><div><span>RARITY</span><b>${card.rarity}</b></div><div><span>LEVEL</span><b>${String(card.level).padStart(2, '0')}</b></div><div><span>SUPPLY</span><b>${card.supply}</b></div></div>`}
     <div class="card-footer"><span>${card.status}</span><b>${opponentCard ? 'OPPONENT' : '● ACTIVE'}</b></div>
   </article>`;
 }
@@ -215,7 +216,7 @@ async function waitForReceipt(hash) {
 function renderAll() {
   const selected = getSelected();
   document.querySelector('#heroCard').innerHTML = cardMarkup(cards[0]);
-  document.querySelector('#collectionGrid').innerHTML = cards.map(card => `<div class="collection-card ${card.id === selectedId ? 'selected' : ''}" data-card-id="${card.id}">${cardMarkup(card)}</div>`).join('');
+  document.querySelector('#collectionGrid').innerHTML = (sortByPower ? [...cards].sort((a, b) => b.power - a.power) : cards).map(card => `<div class="collection-card ${card.id === selectedId ? 'selected' : ''}" data-card-id="${card.id}">${cardMarkup(card)}</div>`).join('');
   document.querySelector('#selectionArt').innerHTML = creatureSvg(selected.tone, selected.evolved);
   document.querySelector('#selectionCode').textContent = String(selected.id).padStart(3, '0');
   document.querySelector('#selectionRarity').textContent = selected.rarity;
@@ -239,8 +240,7 @@ function renderAll() {
   document.querySelector('#duelOpponent').innerHTML = cardMarkup(opponent, true, true);
   document.querySelector('#cardCount').textContent = String(cards.length).padStart(2, '0');
   const supplyByRarity = ['COMMON', 'RARE', 'LEGENDARY'].reduce((result, rarity) => { result[rarity] = cards.filter(card => card.rarity === rarity).reduce((sum, card) => sum + card.supply, 0); return result; }, {});
-  const mintedByRarity = ['COMMON', 'RARE', 'LEGENDARY'].reduce((result, rarity) => { result[rarity] = cards.filter(card => card.rarity === rarity).reduce((sum, card) => sum + card.minted, 0); return result; }, {});
-  ['common', 'rare', 'legendary'].forEach(rarity => { document.querySelector(`#supply-${rarity}`).textContent = `${mintedByRarity[rarity.toUpperCase()]}/${supplyByRarity[rarity.toUpperCase()]}`; });
+  ['common', 'rare', 'legendary'].forEach(rarity => { document.querySelector(`#supply-${rarity}`).textContent = supplyByRarity[rarity.toUpperCase()].toLocaleString('en-US'); });
   document.querySelectorAll('[data-card-id]').forEach(el => el.addEventListener('click', () => { selectedId = Number(el.dataset.cardId); renderAll(); showToast(`${getSelected().name} is now your active card`); }));
 }
 let currentNodesAddress = '';
@@ -413,6 +413,7 @@ document.addEventListener('DOMContentLoaded', () => {
     renderAll();
     showToast(`${selected.name} reached LV ${selected.level}.`);
   });
+  document.querySelectorAll('.filter-chip').forEach(chip => chip.addEventListener('click', () => { document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active')); chip.classList.add('active'); sortByPower = chip.dataset.sort === 'power'; renderAll(); }));
   document.querySelector('#duelButton').addEventListener('click', () => { const selected = getSelected(); const result = document.querySelector('#duelResult'); const win = selected.power >= opponent.power; result.className = `duel-result ${win ? 'win' : 'loss'}`; result.innerHTML = `<span class="result-dot"></span><p>${win ? `${selected.name} takes the round — ${selected.power} power beats ${opponent.power}.` : `${opponent.name} holds the line — add power before the rematch.`}</p>`; showToast(win ? 'Duel result: victory' : 'Duel result: rival wins'); });
 });
 
