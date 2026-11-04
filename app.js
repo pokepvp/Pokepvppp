@@ -97,7 +97,7 @@ function formatPVP(wei) {
   return frac ? `${wholeText}.${frac}` : wholeText;
 }
 function paintTokenContract(addr) { const el = document.querySelector('#tokenContract'); if (el && addr) el.textContent = addr; paintVerifyLinks(); }
-function paintVerifyLinks() { const el = document.querySelector('#verifyLinks'); if (!el) return; const parts = []; if (contractsReady()) parts.push(`<a href="https://bscscan.com/address/${NFT_CONTRACT_ADDRESS}#readContract" target="_blank" rel="noopener">NFT on BscScan</a>`); if (tokenAddressCache) parts.push(`<a href="https://bscscan.com/address/${tokenAddressCache}#readContract" target="_blank" rel="noopener">$PVP on BscScan</a>`); el.innerHTML = parts.length ? ' ' + parts.join(' · ') : ''; }
+function paintVerifyLinks() { const foot = document.querySelector('#footerBscScan'); if (foot && contractsReady()) { foot.href = `https://bscscan.com/address/${NFT_CONTRACT_ADDRESS}`; foot.textContent = 'BscScan — contract'; foot.removeAttribute('aria-disabled'); } const el = document.querySelector('#verifyLinks'); if (!el) return; const parts = []; if (contractsReady()) parts.push(`<a href="https://bscscan.com/address/${NFT_CONTRACT_ADDRESS}#readContract" target="_blank" rel="noopener">NFT on BscScan</a>`); if (tokenAddressCache) parts.push(`<a href="https://bscscan.com/address/${tokenAddressCache}#readContract" target="_blank" rel="noopener">$PVP on BscScan</a>`); el.innerHTML = parts.length ? ' ' + parts.join(' · ') : ''; }
 function paintNftContract() { const el = document.querySelector('#nftContract'); if (el && contractsReady()) el.textContent = NFT_CONTRACT_ADDRESS; paintVerifyLinks(); }
 let tokenAddressCache = '';
 async function resolveTokenAddress() {
