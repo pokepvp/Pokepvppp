@@ -25,8 +25,8 @@ const maxLevel = 10;
 // While empty (""), the site shows a "contract not configured yet" status
 // and every on-chain read is skipped safely — nothing errors out.
 const POKEPVP_CONFIG = {
-  nftAddress: "",   // PokepvpNode (NFT) — filled in after deploy
-  tokenAddress: "", // PvpToken ($PVP) — filled in after deploy; empty = read from nft.pvpToken()
+  nftAddress: "0xFe565C3Dda51eC386263d3955e5455123A50477f", // PokepvpNode (NFT) — deployed 2026-11-04
+  tokenAddress: "0x1687cfcA05CD3a8Ef2b4600A7De0531D305A18C4", // PvpToken ($PVP) — deployed 2026-11-04
   chainId: "0x38"   // BNB Smart Chain Mainnet
 };
 const NFT_CONTRACT_ADDRESS = POKEPVP_CONFIG.nftAddress || window.POKEPVP_NFT_ADDRESS || "";

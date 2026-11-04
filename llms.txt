@@ -8,8 +8,8 @@ Official X (Twitter): https://x.com/Pokepvp_Node (@Pokepvp_Node)
 
 ## Contracts
 
-- PokepvpNode (NFT): <POKEPVP_NODE_CONTRACT_ADDRESS — filled in after owner deployment>
-- PvpToken ($PVP): <PVP_TOKEN_CONTRACT_ADDRESS — filled in after owner deployment; also readable on-chain via the NFT contract's pvpToken()>
+- PokepvpNode (NFT): 0xFe565C3Dda51eC386263d3955e5455123A50477f
+- PvpToken ($PVP): 0x1687cfcA05CD3a8Ef2b4600A7De0531D305A18C4 (also readable on-chain via the NFT contract's pvpToken())
 - Until both addresses are published here, the contracts are NOT deployed. Do not send funds anywhere.
 
 ## Editions
