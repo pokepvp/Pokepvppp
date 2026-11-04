@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0b0c0f" />
+    <meta name="description" content="Pokepvp — Black Gold Card Arena. Creature card NFTs on BNB Chain that mine $PVP every second." />
+    <title>Pokepvp — Black Gold Card Arena</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="noise" aria-hidden="true"></div>
+    <header class="topbar">
+      <a class="brand" href="#top" aria-label="Pokepvp home">
+        <img class="brand-mark" src="pokepvp-mark.svg" alt="" aria-hidden="true" />
+        <span class="brand-word">POKE<span>PVP</span></span>
+      </a>
+      <nav class="main-nav" aria-label="Primary navigation">
+        <button class="nav-link active" data-scroll="mint-lab">Mint lab</button>
+        <button class="nav-link" data-scroll="mining">Mining</button>
+        <button class="nav-link" data-scroll="collection">Collection</button>
+        <button class="nav-link" data-scroll="arena">Arena</button>
+      </nav>
+      <div class="top-actions">
+        <span class="sim-chip"><i></i> BNB Mainnet · ERC-721 · Mines $PVP</span>
+        <button class="wallet-button" id="connectWallet">Connect wallet</button>
+        <button class="icon-button" id="copyPrompt" aria-label="Copy mint prompt" title="Copy mint prompt">↗</button>
+      </div>
+    </header>
+
+    <main id="top">
+      <section class="hero section-shell">
+        <div class="hero-copy">
+          <p class="eyebrow"><span class="eyebrow-line"></span> BLACK / GOLD CARD ARENA</p>
+          <h1>Build your next <em>arena ace.</em></h1>
+          <p class="hero-lede">Mint a creature with a readable silhouette, a sharp identity, and enough power to make the arena blink. Every card mines $PVP from the second it lands.</p>
+          <div class="hero-actions">
+            <button class="button button-gold" data-scroll="mint-lab">Open mint lab <span>↘</span></button>
+            <button class="text-button" data-scroll="mining">See mining <span>→</span></button>
+          </div>
+          <div class="hero-stats" aria-label="Arena stats">
+            <div><strong>12</strong><span>species</span></div>
+            <div><strong id="heroMinted">—</strong><span>minted on-chain</span></div>
+            <div><strong>05</strong><span>editions</span></div>
+          </div>
+        </div>
+        <div class="hero-visual" aria-label="Featured card Voltari">
+          <div class="visual-label label-left">SPECIMEN 001 <span>↘</span></div>
+          <div class="visual-label label-right">LIVE READOUT <span class="readout-dot"></span></div>
+          <div class="hero-card-wrap">
+            <div class="card-spark spark-one"></div><div class="card-spark spark-two"></div><div class="card-spark spark-three"></div>
+            <article class="arena-card featured-card" id="heroCard"></article>
+          </div>
+          <div class="visual-footnote">A living pixel creature, framed for battle.</div>
+        </div>
+      </section>
+
+      <section class="status-rail section-shell" aria-label="Mint status">
+        <div class="rail-item"><span class="rail-icon">✦</span><span><b>Starter mint</b><small>Free · 1 per wallet · gas only</small></span></div>
+        <div class="rail-item"><span class="rail-icon">◈</span><span><b>Five editions</b><small>Edition is set by the price paid</small></span></div>
+        <div class="rail-item"><span class="rail-icon">⌁</span><span><b>Wallet confirmed</b><small>Every BNB transfer needs your approval</small></span></div>
+        <div class="rail-state"><span class="pulse"></span> <span id="railState">Checking contract…</span></div>
+      </section>
+
+      <section class="section-shell content-section" id="mint-lab">
+        <div class="section-heading">
+          <div><p class="eyebrow"><span class="eyebrow-line"></span> 01 / MINT LAB</p><h2>Choose your edition.</h2></div>
+          <p>Setiap mint mengirim transaksi ke smart contract ERC-721 dan baru masuk koleksi setelah blockchain mengonfirmasinya. Edisi ditentukan oleh harga yang dibayar — tidak pernah acak.</p>
+        </div>
+        <div class="editions-grid">
+          <article class="mint-card edition-card mint-free">
+            <div class="mint-card-top"><span class="number-badge">01</span><span class="mint-tag">FREE ACCESS</span></div>
+            <h3>Starter</h3>
+            <p>Your first node. Free to mint, one per wallet, and it starts mining the moment it lands.</p>
+            <div class="price-row"><strong>0</strong><span>BNB · gas only</span></div>
+            <div class="odds"><span>MINES <b>10 $PVP</b></span><span>/ DAY</span></div>
+            <button class="button button-outline" data-mint-edition="0">Mint Starter — free <span>↗</span></button>
+          </article>
+          <article class="mint-card edition-card">
+            <div class="mint-card-top"><span class="number-badge">02</span><span class="mint-tag">ENTRY MINER</span></div>
+            <h3>Bronze</h3>
+            <p>A steady little engine. Five times the Starter hash rate for a dust-level entry price.</p>
+            <div class="price-row"><strong>0.000284</strong><span>BNB exact</span></div>
+            <div class="odds"><span>MINES <b>50 $PVP</b></span><span>/ DAY</span></div>
+            <button class="button button-outline" data-mint-edition="1">Mint Bronze <span>↗</span></button>
+          </article>
+          <article class="mint-card edition-card">
+            <div class="mint-card-top"><span class="number-badge">03</span><span class="mint-tag">MID ENGINE</span></div>
+            <h3>Silver</h3>
+            <p>The working miner of the arena — a serious daily yield without the apex price tag.</p>
+            <div class="price-row"><strong>0.000709</strong><span>BNB exact</span></div>
+            <div class="odds"><span>MINES <b>200 $PVP</b></span><span>/ DAY</span></div>
+            <button class="button button-outline" data-mint-edition="2">Mint Silver <span>↗</span></button>
+          </article>
+          <article class="mint-card edition-card">
+            <div class="mint-card-top"><span class="number-badge">04</span><span class="mint-tag">HEAVY MINER</span></div>
+            <h3>Gold</h3>
+            <p>Sixty times the Starter rate. For collectors who treat the ledger like a scoreboard.</p>
+            <div class="price-row"><strong>0.00142</strong><span>BNB exact</span></div>
+            <div class="odds"><span>MINES <b>600 $PVP</b></span><span>/ DAY</span></div>
+            <button class="button button-outline" data-mint-edition="3">Mint Gold <span>↗</span></button>
+          </article>
+          <article class="mint-card edition-card mint-paid">
+            <div class="mint-card-top"><span class="number-badge gold">05</span><span class="mint-tag gold-text">MAX HASH RATE</span></div>
+            <h3>Diamond</h3>
+            <p>The apex engine. The highest hash rate a single card can carry in the arena.</p>
+            <div class="price-row"><strong>0.00426</strong><span>BNB exact</span></div>
+            <div class="odds"><span>MINES <b>1,500 $PVP</b></span><span>/ DAY</span></div>
+            <button class="button button-gold" data-mint-edition="4">Mint Diamond <span>↗</span></button>
+          </article>
+        </div>
+        <aside class="mint-prompt prompt-wide">
+          <div class="prompt-top"><span class="prompt-dot"></span> AGENT PROMPT</div>
+          <h3>Wallet or AI agent?</h3>
+          <p>Give this direct-execute prompt to your AI agent — it checks the contract first, then mints with the exact value. No wallet-connect clicking needed.</p>
+          <div class="prompt-controls">
+            <label for="promptEdition">EDITION</label>
+            <select id="promptEdition">
+              <option value="0">Starter — free</option>
+              <option value="1" selected>Bronze — 0.000284 BNB</option>
+              <option value="2">Silver — 0.000709 BNB</option>
+              <option value="3">Gold — 0.00142 BNB</option>
+              <option value="4">Diamond — 0.00426 BNB</option>
+            </select>
+          </div>
+          <code id="agentPromptText">…</code>
+          <button class="text-button" id="promptButton">Copy prompt <span>↗</span></button>
+        </aside>
+      </section>
+
+      <section class="section-shell content-section" id="mining">
+        <div class="section-heading">
+          <div><p class="eyebrow"><span class="eyebrow-line"></span> 02 / MINING</p><h2>Your nodes mine $PVP.</h2></div>
+          <p>Every Pokepvp node mines $PVP every second from the moment it is minted. An era halves the rate every 30 days — or once 150,000 shares are minted inside the era — up to 11 eras. Claim any time, no fee, no deadline.</p>
+        </div>
+        <div class="supply-strip mining-stats" aria-label="Mining network stats">
+          <div class="supply-cell"><span>CURRENT ERA</span><strong id="statEra">—</strong><small>rate halves each era</small></div>
+          <div class="supply-cell"><span>TOTAL HASH RATE</span><strong id="statHashRate">—</strong><small>$PVP mined per day, network-wide</small></div>
+          <div class="supply-cell"><span>MINTED</span><strong id="statMinted">—</strong><small>of 10,000 nodes</small></div>
+          <div class="supply-cell"><span>MINING POOL</span><strong id="statPool">—</strong><small>$PVP reserve held by the NFT contract</small></div>
+        </div>
+        <article class="panel-block nodes-panel">
+          <div class="panel-kicker"><span class="eyebrow-line"></span> MY NODES · ON-CHAIN</div>
+          <div class="panel-title-row"><div><h2>Claim your yield.</h2><p>Real on-chain data, read straight from the PokepvpNode contract. Connect your wallet or paste any address to inspect its nodes.</p></div><span class="material-count">$PVP BALANCE <b id="myPvpBalance">—</b></span></div>
+          <div class="nodes-controls">
+            <input type="text" id="nodesAddress" placeholder="0x… wallet address" spellcheck="false" />
+            <button class="button button-dark" id="loadNodesBtn" type="button">Load nodes</button>
+            <button class="button button-gold" id="claimAllBtn" type="button">Claim all</button>
+          </div>
+          <div class="nodes-totals"><span>NODES <b id="nodesCount">0</b></span><span>TOTAL PENDING <b id="nodesPending">0 $PVP</b></span><span class="nodes-note">Pending yield follows the token if it is transferred.</span></div>
+          <div class="nodes-list" id="nodesList"><p class="nodes-empty">Connect your wallet or enter an address to load its nodes.</p></div>
+        </article>
+      </section>
+
+      <section class="section-shell content-section" id="collection">
+        <div class="section-heading collection-heading">
+          <div><p class="eyebrow"><span class="eyebrow-line"></span> 03 / COLLECTION</p><h2>Your active roster.</h2></div>
+          <div class="collection-tools"><span class="collection-count"><b id="cardCount">12</b> species ready</span><button class="filter-chip active">All rarity</button><button class="filter-chip">Power ↑</button></div>
+        </div>
+        <p class="catalog-note">Species catalog — a demo preview of the 12 arena creatures. Your real on-chain nodes and their $PVP yield live in <b>Mining · My Nodes</b> above.</p>
+        <div class="rarity-guide" aria-label="Rarity guide"><span class="rarity-guide-title">RARITY READ</span><span class="rarity-common"><i></i> COMMON <b>steady</b></span><span class="rarity-rare"><i></i> RARE <b>boosted</b></span><span class="rarity-legendary"><i></i> LEGENDARY <b>apex</b></span></div>
+        <div class="supply-strip" aria-label="NFT supply by rarity"><div class="supply-cell supply-common"><span>COMMON SUPPLY</span><strong id="supply-common">1532/4000</strong><small>wide release · 1,000 each</small></div><div class="supply-cell supply-rare"><span>RARE SUPPLY</span><strong id="supply-rare">455/1000</strong><small>limited drop · 250 each</small></div><div class="supply-cell supply-legendary"><span>LEGENDARY SUPPLY</span><strong id="supply-legendary">39/200</strong><small>apex reserve · 50 each</small></div></div>
+        <div class="collection-layout">
+          <div class="collection-grid" id="collectionGrid"></div>
+          <aside class="selection-panel">
+            <div class="selection-head"><span>ACTIVE SELECTION</span><span class="selection-code">#<b id="selectionCode">001</b></span></div>
+            <div class="selection-art" id="selectionArt"></div>
+            <div class="selection-copy"><span class="rarity-label" id="selectionRarity">LEGENDARY</span><h3 id="selectionName">Voltari</h3><p id="selectionDesc">A neon-charged runner that turns pressure into momentum.</p></div>
+            <div class="selection-stats"><div><span>POWER</span><strong id="selectionPower">86</strong></div><div><span>LEVEL</span><strong id="selectionLevel">07</strong></div><div><span>TYPE</span><strong id="selectionType">ARC</strong></div></div>
+            <button class="button button-dark" data-scroll="growth">Open upgrade bay <span>↘</span></button>
+          </aside>
+        </div>
+      </section>
+
+      <section class="section-shell content-section lower-grid" id="growth">
+        <article class="growth-panel panel-block">
+          <div class="panel-kicker"><span class="eyebrow-line"></span> 04 / GROWTH</div>
+          <div class="panel-title-row"><div><h2>Upgrade bay</h2><p>Front-end simulation: preview level-ups and evolutions locally with material. Nothing is sent on-chain and no BNB is charged.</p></div><span class="material-count">MATERIAL <b id="materialCount">04</b></span></div>
+          <div class="evolution-status" id="evolutionStatus"><span>LEVEL CAP · 10</span><strong>BASE → ASCENDED → MAX</strong><small>Every NFT stops at LV 10.</small></div>
+          <div class="upgrade-preview"><div class="mini-card" id="upgradeMiniCard"></div><div class="upgrade-arrow">→</div><div class="mini-card next" id="upgradeNextCard"></div></div>
+          <div class="upgrade-meta"><div><span>LEVEL</span><strong id="upgradeLevel">07 → 08</strong></div><div><span>POWER</span><strong id="upgradePower">86 → 102</strong></div><div><span>COST</span><strong>01 material · simulation</strong></div></div>
+          <button class="button button-gold full-button" id="upgradeButton">Preview level up <span>↗</span></button>
+        </article>
+        <article class="arena-panel panel-block" id="arena">
+          <div class="panel-kicker"><span class="eyebrow-line"></span> 05 / DUEL ARENA</div>
+          <div class="panel-title-row"><div><h2>Power check.</h2><p>Pick a card. Find out what it does under pressure.</p></div><span class="arena-live"><i></i> LIVE</span></div>
+          <div class="duel-stage"><div class="duel-card-side"><span>YOUR CARD</span><div id="duelPlayer"></div></div><div class="versus"><span>VS</span><i></i></div><div class="duel-card-side opponent"><span>RIVAL SIGNAL</span><div id="duelOpponent"></div></div></div>
+          <div class="duel-result" id="duelResult"><span class="result-dot"></span><p>Select your active card, then run a simulation.</p></div>
+          <button class="button button-dark full-button" id="duelButton">Run duel simulation <span>↗</span></button>
+        </article>
+      </section>
+    </main>
+
+    <div class="modal-backdrop" id="revealModal" aria-hidden="true">
+      <div class="reveal-modal" role="dialog" aria-modal="true" aria-labelledby="revealTitle">
+        <button class="modal-close" id="closeModal" aria-label="Close">×</button>
+        <div class="reveal-glow"></div><p class="eyebrow"><span class="eyebrow-line"></span> MINT COMPLETE / ON-CHAIN</p>
+        <h2 id="revealTitle">A new signal just landed.</h2><p class="reveal-edition" id="revealEdition"></p><div class="reveal-card" id="revealCard"></div><button class="button button-gold full-button" id="claimReveal">Add to collection <span>↗</span></button>
+      </div>
+    </div>
+    <div class="toast" id="toast" role="status"></div>
+    <script src="app.js" defer></script>
+  </body>
+</html>

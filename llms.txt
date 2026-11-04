@@ -1,0 +1,72 @@
+# Pokepvp — machine-readable mint & claim instructions
+
+Pokepvp Creature (PKVP) is an ERC-721 collection on BNB Smart Chain (chainId 56 / 0x38).
+Every node mines the $PVP ERC-20 every second from the moment it is minted.
+The edition of a node is set by the price paid at mint — never by random rarity.
+
+## Contracts
+
+- PokepvpNode (NFT): <POKEPVP_NODE_CONTRACT_ADDRESS — filled in after owner deployment>
+- PvpToken ($PVP): <PVP_TOKEN_CONTRACT_ADDRESS — filled in after owner deployment; also readable on-chain via the NFT contract's pvpToken()>
+- Until both addresses are published here, the contracts are NOT deployed. Do not send funds anywhere.
+
+## Editions
+
+| Edition | Name | Exact price | Price in wei | Hash rate |
+|---|---|---|---|---|
+| 0 | Starter | 0 BNB | 0 wei (0x0) | 10 PVP/day |
+| 1 | Bronze | 0.000284 BNB | 284000000000000 wei (0x1024be71dc000) | 50 PVP/day |
+| 2 | Silver | 0.000709 BNB | 709000000000000 wei (0x284d4ed255000) | 200 PVP/day |
+| 3 | Gold | 0.00142 BNB | 1420000000000000 wei (0x50b7b8394c000) | 600 PVP/day |
+| 4 | Diamond | 0.00426 BNB | 4260000000000000 wei (0xf22728abe4000) | 1500 PVP/day |
+
+Rules:
+- Total supply cap: 10,000 nodes. Token IDs are sequential from 1.
+- Edition 0 (Starter) is free: value MUST be exactly 0, and each wallet may mint at most 1 Starter (freeUsed).
+- Paid editions require the EXACT price as the transaction value — no more, no less.
+- There is no per-wallet cap on paid editions (only the 10,000 collection cap).
+
+## Pre-checks (always run before minting)
+
+1. Call mintOpen() on the NFT contract — selector 0x24bbd049. It must return true.
+2. Call editionPrice(edition) — selector 0x38d37b9b + padded edition index. The returned wei value must equal the table above.
+3. For edition 0 only: call freeUsed(your wallet address) — selector 0x2626c4bf + padded address. It must return false.
+If any check fails, stop and report it — never switch editions or pay a different amount.
+
+## Mint call
+
+Function: mint(uint8 edition), payable. Selector: 0x6ecd2306.
+Send with gasLimit 600000 (explicit gas limit — do not rely on estimation).
+Calldata per edition (selector + edition index padded to 32 bytes) and exact value:
+- mint(0) — Starter: data = 0x6ecd23060000000000000000000000000000000000000000000000000000000000000000, value = 0 wei (0x0)
+- mint(1) — Bronze: data = 0x6ecd23060000000000000000000000000000000000000000000000000000000000000001, value = 284000000000000 wei (0x1024be71dc000)
+- mint(2) — Silver: data = 0x6ecd23060000000000000000000000000000000000000000000000000000000000000002, value = 709000000000000 wei (0x284d4ed255000)
+- mint(3) — Gold: data = 0x6ecd23060000000000000000000000000000000000000000000000000000000000000003, value = 1420000000000000 wei (0x50b7b8394c000)
+- mint(4) — Diamond: data = 0x6ecd23060000000000000000000000000000000000000000000000000000000000000004, value = 4260000000000000 wei (0xf22728abe4000)
+
+A successful mint emits Transfer(from = 0x0, to = your wallet, tokenId). The tokenId is topic 3 of that log.
+
+## Mining and claiming $PVP
+
+- Accrual: a node earns hashRate PVP per day, accruing per second. Hash rates by edition: Starter 10, Bronze 50, Silver 200, Gold 600, Diamond 1500 PVP/day (in wei: rate x 10^18 per day).
+- Eras: era 1 starts at deployment. An era ends after 30 days OR once 150,000 shares (PVP/day of hash rate minted inside that era) are reached, whichever first. The yield multiplier halves at every era boundary (era n pays rate / 2^(n-1)). There are at most 11 eras; after era 11 the multiplier stays at the era-11 level.
+- Read pending yield: pendingOf(tokenId) — selector 0x7e7feaa7 + padded tokenId. Returns PVP wei.
+- Claim: claim(uint256 tokenId) — selector 0x379607f5 + padded tokenId. Non-payable, no fee. Only the token's owner can claim; the $PVP is paid from the NFT contract's mining reserve. Unclaimed yield follows the token when it is transferred.
+- Claim calldata example for tokenId 1: 0x379607f50000000000000000000000000000000000000000000000000000000000000001
+
+## Useful read-only calls (selectors)
+
+- totalMinted() — 0xa2309ff8
+- era() — 0x143e55e0 (current era, 1-based)
+- totalHashRate() — 0xda3b6b35 (network-wide PVP wei mined per day)
+- tokensOfOwner(address) — 0x8462151c + padded address (returns uint256 array of token IDs)
+- editionOf(tokenId) — 0x4be185f0 + padded tokenId
+- hashRateOf(tokenId) — 0x53b6eb99 + padded tokenId (PVP wei per day at the current era-unadjusted edition rate)
+- mintCount(address) — 0xed9ec888 + padded address
+- pvpToken() — 0x12bbb811 (the $PVP token address wired into the NFT contract)
+- $PVP balanceOf(address) — 0x70a08231 + padded address, called on the token contract. The mining pool remaining is balanceOf(NFT contract address) on the token.
+
+## $PVP token facts
+
+- Name Pokepvp Token, symbol PVP, 18 decimals, fixed supply 1,000,000,000 PVP.
+- 600,000,000 PVP (60%) sits in the NFT contract as the mining reserve; 400,000,000 PVP (40%) went to the deployer.
