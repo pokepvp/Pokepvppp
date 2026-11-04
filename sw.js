@@ -1,6 +1,6 @@
 // Pokepvp service worker — network-first, so the site is never stale;
 // the cache only answers when the network is unreachable.
-const CACHE = 'pokepvp-v1';
+const CACHE = 'pokepvp-v2';
 const SHELL = ['./', './index.html', './styles.css', './app.js', './icon.svg', './pokepvp-mark.svg', './llms.txt', './manifest.webmanifest'];
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(SHELL)).then(() => self.skipWaiting()));

@@ -62,7 +62,7 @@ const SEL = {
   balanceOf: "0x70a08231"      // ERC-20 balanceOf(address)
 };
 const MINT_SELECTOR = SEL.mint;
-const TOKEN_TRANSFER_TOPIC = '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628cd55f3c5b5a7d382b';
+const TOKEN_TRANSFER_TOPIC = '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef';
 let walletAddress = null;
 
 function contractsReady() { return validContractAddress(NFT_CONTRACT_ADDRESS); }
@@ -451,3 +451,128 @@ async function copyPrompt() { const value = currentAgentPrompt(); try { await na
 
 // Installable web app: register the service worker (network-first, cache is only an offline fallback).
 if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(() => {}); }); }
+// ── Live mint feed + Top Miners board ─────────────────────────────
+// Both are built from plain eth_call reads — the same calls the rest
+// of this page already makes — so they work wherever the stats do.
+// The feed tracks the minted counter: new token IDs appear the moment
+// totalMinted grows, with their owner and edition read on the spot.
+// The board enumerates the latest BOARD_SCAN_CAP tokens with ownerOf
+// (ground truth for current holders) and ranks wallets by summed
+// hashRateOf. State is cached in localStorage between visits.
+const OWNEROF_SEL = '0x6352211e'; // ownerOf(uint256)
+const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
+const BOARD_SCAN_CAP = 600;
+const liveState = { minted: 0, ownerOf: new Map(), mints: [], partial: false, busy: false };
+
+function saveLiveCache() {
+  try { localStorage.setItem('pokepvp_live_v2', JSON.stringify({ minted: liveState.minted, owners: Object.fromEntries(liveState.ownerOf), mints: liveState.mints.slice(-40) })); } catch { /* storage unavailable */ }
+}
+function loadLiveCache() {
+  try {
+    const raw = localStorage.getItem('pokepvp_live_v2');
+    if (!raw) return;
+    const j = JSON.parse(raw);
+    if (typeof j.minted === 'number' && j.minted > 0) {
+      liveState.minted = j.minted;
+      liveState.ownerOf = new Map(Object.entries(j.owners || {}).map(([k, v]) => [Number(k), v]));
+      liveState.mints = Array.isArray(j.mints) ? j.mints : [];
+    }
+  } catch { /* no usable cache */ }
+}
+async function refreshLiveData() {
+  if (!contractsReady() || liveState.busy) return;
+  liveState.busy = true;
+  try {
+    const total = Number(await readUint(NFT_CONTRACT_ADDRESS, SEL.totalMinted));
+    if (total > 0 && liveState.mints.length === 0 && liveState.minted === 0) {
+      for (let id = Math.max(1, total - 13); id <= total; id += 1) liveState.mints.push({ id, seen: null });
+    } else if (total > liveState.minted) {
+      for (let id = liveState.minted + 1; id <= total; id += 1) liveState.mints.push({ id, seen: Date.now() });
+    }
+    liveState.minted = total;
+    if (liveState.mints.length > 40) liveState.mints = liveState.mints.slice(-40);
+    liveState.partial = total > BOARD_SCAN_CAP;
+    const start = Math.max(1, total - BOARD_SCAN_CAP + 1);
+    const ids = [];
+    for (let id = start; id <= total; id += 1) ids.push(id);
+    for (let i = 0; i < ids.length; i += 12) {
+      const batch = ids.slice(i, i + 12);
+      const res = await Promise.allSettled(batch.map(id => readAddress(NFT_CONTRACT_ADDRESS, OWNEROF_SEL + encUint(id))));
+      res.forEach((r, j) => { if (r.status === 'fulfilled' && validContractAddress(r.value) && r.value.toLowerCase() !== ZERO_ADDRESS) liveState.ownerOf.set(batch[j], r.value); });
+    }
+    for (const id of [...liveState.ownerOf.keys()]) if (id < start || id > total) liveState.ownerOf.delete(id);
+    saveLiveCache();
+  } catch { /* keep the last good render */ } finally { liveState.busy = false; }
+}
+const speciesNameCache = new Map();
+async function speciesName(tokenId) {
+  if (speciesNameCache.has(tokenId)) return speciesNameCache.get(tokenId);
+  let name = 'Node';
+  try {
+    const res = await fetch('metadata/' + tokenId + '.json');
+    if (res.ok) { const j = await res.json(); if (j && j.name) name = String(j.name).replace(/ #\d+$/, ''); }
+  } catch { /* metadata unreachable - generic label */ }
+  speciesNameCache.set(tokenId, name);
+  return name;
+}
+function timeAgo(tsSec) {
+  const s = Math.max(0, Math.floor(Date.now() / 1000) - tsSec);
+  if (s < 60) return 'just now';
+  if (s < 3600) return Math.floor(s / 60) + 'm ago';
+  if (s < 86400) return Math.floor(s / 3600) + 'h ago';
+  return Math.floor(s / 86400) + 'd ago';
+}
+async function renderFeed() {
+  const track = document.querySelector('#liveTrack');
+  if (!track) return;
+  const items = [...liveState.mints].slice(-14).reverse();
+  if (!items.length) { track.innerHTML = '<span class="live-item muted">No mints yet — the next node could be yours.</span>'; return; }
+  const parts = await Promise.all(items.map(async i => {
+    const [ed, nm] = await Promise.all([
+      readUint(NFT_CONTRACT_ADDRESS, SEL.editionOf + encUint(i.id)).catch(() => 0n),
+      speciesName(i.id)
+    ]);
+    let owner = liveState.ownerOf.get(i.id);
+    if (!owner) { try { owner = await readAddress(NFT_CONTRACT_ADDRESS, OWNEROF_SEL + encUint(i.id)); } catch { owner = ''; } }
+    const edition = EDITIONS[Number(ed)] || EDITIONS[0];
+    const who = owner && validContractAddress(owner) ? shortenAddress(owner) : 'A miner';
+    const when = i.seen ? timeAgo(Math.floor(i.seen / 1000)) : 'recently';
+    return `<span class="live-item"><b>${who}</b> minted <b class="live-ed ed-${Number(ed)}">${edition.name}</b> ${nm} #${i.id} <i>${when}</i></span>`;
+  }));
+  const html = parts.join('<span class="live-sep">✦</span>');
+  track.innerHTML = html + '<span class="live-sep">✦</span>' + html + '<span class="live-sep">✦</span>';
+}
+async function renderBoard() {
+  const list = document.querySelector('#boardList');
+  if (!list) return;
+  const note = document.querySelector('#boardNote');
+  if (note) note.textContent = liveState.partial
+    ? 'Holders of the latest 600 nodes, ranked by combined hash rate — read live from the contract.'
+    : 'Current holders ranked by combined hash rate — read live from the contract.';
+  const byWallet = new Map();
+  for (const [id, addr] of liveState.ownerOf) { if (!byWallet.has(addr)) byWallet.set(addr, []); byWallet.get(addr).push(id); }
+  const wallets = [...byWallet.entries()].map(([addr, ids]) => ({ addr, ids })).sort((a, b) => b.ids.length - a.ids.length).slice(0, 12);
+  if (!wallets.length) {
+    list.innerHTML = '<p class="nodes-empty">No nodes minted yet — the crown is unclaimed.</p>';
+    const crown0 = document.querySelector('#boardCrown'); if (crown0) crown0.textContent = '—';
+    return;
+  }
+  const rows = await Promise.all(wallets.map(async w => {
+    let rate = 0n;
+    const parts = await Promise.allSettled(w.ids.map(id => readUint(NFT_CONTRACT_ADDRESS, SEL.hashRateOf + encUint(id))));
+    for (const p of parts) if (p.status === 'fulfilled') rate += p.value;
+    return { addr: w.addr, ids: w.ids, rate };
+  }));
+  rows.sort((a, b) => (b.rate > a.rate ? 1 : b.rate < a.rate ? -1 : b.ids.length - a.ids.length));
+  const crown = document.querySelector('#boardCrown');
+  if (crown) crown.textContent = shortenAddress(rows[0].addr);
+  list.innerHTML = rows.map((w, i) => {
+    const you = walletAddress && w.addr.toLowerCase() === walletAddress.toLowerCase();
+    return `<div class="board-row${i === 0 ? ' board-first' : ''}${you ? ' board-you' : ''}"><span class="board-rank">${i === 0 ? '👑' : '#' + (i + 1)}</span><span class="board-addr">${shortenAddress(w.addr)}${you ? ' <b class="you-chip">YOU</b>' : ''}</span><span class="board-nodes">${w.ids.length} node${w.ids.length === 1 ? '' : 's'}</span><span class="board-rate">${formatPVP(w.rate)} $PVP/day</span></div>`;
+  }).join('');
+}
+async function refreshLive() { await refreshLiveData(); renderFeed(); renderBoard(); }
+document.addEventListener('DOMContentLoaded', () => {
+  loadLiveCache();
+  if (contractsReady()) { refreshLive(); setInterval(refreshLive, 60000); }
+});

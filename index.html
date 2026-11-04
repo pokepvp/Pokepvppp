@@ -84,7 +84,12 @@
         <div class="rail-state"><span class="pulse"></span> <span id="railState">Checking contract…</span></div>
       </section>
 
-      <section class="section-shell content-section" id="mint-lab">
+            <section class="section-shell live-strip" aria-label="Live mint feed">
+        <div class="live-head"><span class="live-dot"></span> LIVE MINTS</div>
+        <div class="live-viewport"><div class="live-track" id="liveTrack"><span class="live-item muted">Reading the chain…</span></div></div>
+      </section>
+
+<section class="section-shell content-section" id="mint-lab">
         <div class="section-heading">
           <div><p class="eyebrow"><span class="eyebrow-line"></span> 01 / MINT LAB</p><h2>Choose your edition.</h2></div>
           <p>Every mint sends a transaction to the ERC-721 smart contract and only joins the collection after the blockchain confirms it. The edition is determined by the price paid — never random.</p>
@@ -173,6 +178,11 @@
           <div class="nodes-totals"><span>NODES <b id="nodesCount">0</b></span><span>TOTAL PENDING <b id="nodesPending">0 $PVP</b></span><span>COMBINED HASH RATE <b id="nodesRate">0 $PVP/day</b></span><span class="nodes-note">Pending yield follows the token if it is transferred.</span></div>
           <div class="nodes-list" id="nodesList"><p class="nodes-empty">Connect your wallet or enter an address to load its nodes.</p></div>
         </article>
+        <article class="panel-block board-panel" id="miners">
+          <div class="panel-kicker"><span class="eyebrow-line"></span> TOP MINERS · ON-CHAIN</div>
+          <div class="panel-title-row"><div><h2>The crown mines hardest.</h2><p id="boardNote">Current holders ranked by combined hash rate — read live from the contract&#8217;s Transfer events.</p></div><span class="material-count">CROWN <b id="boardCrown">—</b></span></div>
+          <div class="board-list" id="boardList"><p class="nodes-empty">Scanning the chain for miners…</p></div>
+        </article>
       </section>
 
       <section class="section-shell content-section" id="token">
@@ -240,6 +250,7 @@
           <span class="footer-title">THE ARENA</span>
           <button class="footer-link" data-scroll="mint-lab">01 · Mint Lab</button>
           <button class="footer-link" data-scroll="mining">02 · Mining</button>
+          <button class="footer-link" data-scroll="miners">Top miners</button>
           <button class="footer-link" data-scroll="token">03 · Token</button>
           <button class="footer-link" data-scroll="collection">04 · Collection</button>
           <button class="footer-link" data-scroll="growth">05 · Growth</button>
