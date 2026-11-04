@@ -175,11 +175,12 @@
       <section class="section-shell content-section lower-grid" id="growth">
         <article class="growth-panel panel-block">
           <div class="panel-kicker"><span class="eyebrow-line"></span> 04 / GROWTH</div>
-          <div class="panel-title-row"><div><h2>Upgrade bay</h2><p>Front-end simulation: preview level-ups and evolutions locally with material. Nothing is sent on-chain and no BNB is charged.</p></div><span class="material-count">MATERIAL <b id="materialCount">04</b></span></div>
+          <div class="panel-title-row"><div><h2>Upgrade bay</h2><p>Front-end simulation: preview level-ups and evolutions locally with material. Nothing is sent on-chain and no BNB is charged. Material is a simulation resource: win duels in the Duel Arena (+1 per win) or claim the daily supply below (+2). Your material and card levels are saved in this browser.</p></div><span class="material-count">MATERIAL <b id="materialCount">04</b></span></div>
           <div class="evolution-status" id="evolutionStatus"><span>LEVEL CAP · 10</span><strong>BASE → ASCENDED → MAX</strong><small>Every NFT stops at LV 10.</small></div>
           <div class="upgrade-preview"><div class="mini-card" id="upgradeMiniCard"></div><div class="upgrade-arrow">→</div><div class="mini-card next" id="upgradeNextCard"></div></div>
-          <div class="upgrade-meta"><div><span>LEVEL</span><strong id="upgradeLevel">07 → 08</strong></div><div><span>POWER</span><strong id="upgradePower">86 → 102</strong></div><div><span>COST</span><strong>01 material · simulation</strong></div></div>
+          <div class="upgrade-meta"><div><span>LEVEL</span><strong id="upgradeLevel">07 → 08</strong></div><div><span>POWER</span><strong id="upgradePower">86 → 102</strong></div><div><span>COST</span><strong id="upgradeCost">01 material · you have 04</strong></div></div>
           <button class="button button-gold full-button" id="upgradeButton">Preview level up <span>↗</span></button>
+          <button class="button button-outline full-button" id="dailySupplyButton">Claim daily supply · +2 material <span>↗</span></button>
         </article>
         <article class="arena-panel panel-block" id="arena">
           <div class="panel-kicker"><span class="eyebrow-line"></span> 05 / DUEL ARENA</div>
