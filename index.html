@@ -152,9 +152,23 @@
         </article>
       </section>
 
+      <section class="section-shell content-section" id="token">
+        <div class="section-heading">
+          <div><p class="eyebrow"><span class="eyebrow-line"></span> 03 / TOKEN</p><h2>Meet $PVP.</h2></div>
+          <p>The arena's fuel. $PVP is created once, split once — after that, the only way it moves is through the nodes that mine it.</p>
+        </div>
+        <div class="supply-strip" aria-label="$PVP tokenomics">
+          <div class="supply-cell"><span>TOTAL SUPPLY</span><strong>1,000,000,000</strong><small>fixed at launch — no mint function, ever</small></div>
+          <div class="supply-cell"><span>MINING POOL</span><strong>600,000,000</strong><small>60% — held by the NFT contract, paid out as node yield</small></div>
+          <div class="supply-cell"><span>PROJECT TREASURY</span><strong>400,000,000</strong><small>40% — held by the project owner</small></div>
+          <div class="supply-cell"><span>CLAIMS</span><strong>Any time</strong><small>no fee · no deadline · no lock</small></div>
+        </div>
+        <p class="catalog-note">Every $PVP a collector will ever hold comes from exactly two places: the mining pool, earned second by second by live nodes, or the treasury allocation set at launch. Rates halve each era — after 30 days or 150,000 shares minted inside the era — across a maximum of 11 eras.</p>
+        <p class="catalog-note">TOKEN CONTRACT — <b id="tokenContract">not deployed yet · the address appears here once the contracts are deployed and wired</b></p>
+      </section>
       <section class="section-shell content-section" id="collection">
         <div class="section-heading collection-heading">
-          <div><p class="eyebrow"><span class="eyebrow-line"></span> 03 / COLLECTION</p><h2>Your active roster.</h2></div>
+          <div><p class="eyebrow"><span class="eyebrow-line"></span> 04 / COLLECTION</p><h2>Your active roster.</h2></div>
           <div class="collection-tools"><span class="collection-count"><b id="cardCount">12</b> species ready</span><button class="filter-chip active">All rarity</button><button class="filter-chip">Power ↑</button></div>
         </div>
         <p class="catalog-note">Species catalog — a demo preview of the 12 arena creatures. Your real on-chain nodes and their $PVP yield live in <b>Mining · My Nodes</b> above.</p>
@@ -174,7 +188,7 @@
 
       <section class="section-shell content-section lower-grid" id="growth">
         <article class="growth-panel panel-block">
-          <div class="panel-kicker"><span class="eyebrow-line"></span> 04 / GROWTH</div>
+          <div class="panel-kicker"><span class="eyebrow-line"></span> 05 / GROWTH</div>
           <div class="panel-title-row"><div><h2>Upgrade bay</h2><p>Front-end simulation: preview level-ups and evolutions locally — free, and nothing is sent on-chain. Real progression works like the mint itself: pay for a higher edition and its hash rate is yours from the first block. Your preview levels are saved in this browser.</p></div><span class="material-count">REAL POWER <b>PAID AT MINT</b></span></div>
           <div class="evolution-status" id="evolutionStatus"><span>LEVEL CAP · 10</span><strong>BASE → ASCENDED → MAX</strong><small>Every NFT stops at LV 10.</small></div>
           <div class="upgrade-preview"><div class="mini-card" id="upgradeMiniCard"></div><div class="upgrade-arrow">→</div><div class="mini-card next" id="upgradeNextCard"></div></div>
@@ -182,7 +196,7 @@
           <button class="button button-gold full-button" id="upgradeButton">Preview level up <span>↗</span></button>
         </article>
         <article class="arena-panel panel-block" id="arena">
-          <div class="panel-kicker"><span class="eyebrow-line"></span> 05 / DUEL ARENA</div>
+          <div class="panel-kicker"><span class="eyebrow-line"></span> 06 / DUEL ARENA</div>
           <div class="panel-title-row"><div><h2>Power check.</h2><p>Pick a card. Find out what it does under pressure.</p></div><span class="arena-live"><i></i> LIVE</span></div>
           <div class="duel-stage"><div class="duel-card-side"><span>YOUR CARD</span><div id="duelPlayer"></div></div><div class="versus"><span>VS</span><i></i></div><div class="duel-card-side opponent"><span>RIVAL SIGNAL</span><div id="duelOpponent"></div></div></div>
           <div class="duel-result" id="duelResult"><span class="result-dot"></span><p>Select your active card, then run a simulation.</p></div>

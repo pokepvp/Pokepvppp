@@ -93,12 +93,13 @@ function formatPVP(wei) {
   const wholeText = whole.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   return frac ? `${wholeText}.${frac}` : wholeText;
 }
+function paintTokenContract(addr) { const el = document.querySelector('#tokenContract'); if (el && addr) el.textContent = addr; }
 let tokenAddressCache = '';
 async function resolveTokenAddress() {
-  if (validContractAddress(TOKEN_CONTRACT_ADDRESS)) return TOKEN_CONTRACT_ADDRESS;
+  if (validContractAddress(TOKEN_CONTRACT_ADDRESS)) { paintTokenContract(TOKEN_CONTRACT_ADDRESS); return TOKEN_CONTRACT_ADDRESS; }
   if (tokenAddressCache) return tokenAddressCache;
   if (!contractsReady()) return '';
-  try { const a = await readAddress(NFT_CONTRACT_ADDRESS, SEL.pvpToken); if (validContractAddress(a) && a.toLowerCase() !== '0x0000000000000000000000000000000000000000') tokenAddressCache = a; } catch { /* token not set on the contract yet */ }
+  try { const a = await readAddress(NFT_CONTRACT_ADDRESS, SEL.pvpToken); if (validContractAddress(a) && a.toLowerCase() !== '0x0000000000000000000000000000000000000000') { tokenAddressCache = a; paintTokenContract(a); } } catch { /* token not set on the contract yet */ }
   return tokenAddressCache;
 }
 
