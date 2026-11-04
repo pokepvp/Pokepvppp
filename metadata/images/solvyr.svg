@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1000" viewBox="0 0 1000 1000">
+<defs>
+<radialGradient id="stage" cx="0.5" cy="0.43" r="0.55"><stop offset="0" stop-color="#efb84b" stop-opacity="0.26"/><stop offset="1" stop-color="#efb84b" stop-opacity="0"/></radialGradient>
+<pattern id="grid" width="62" height="62" patternUnits="userSpaceOnUse"><path d="M62 0H0V62" fill="none" stroke="#ffffff" stroke-opacity="0.03"/></pattern>
+<filter id="hue"><feColorMatrix type="hueRotate" values="325"/></filter>
+</defs>
+<rect width="1000" height="1000" fill="#0d0e11"/>
+<rect width="1000" height="1000" fill="url(#stage)"/>
+<rect width="1000" height="1000" fill="url(#grid)"/>
+<rect x="28" y="28" width="944" height="944" fill="none" stroke="#d09a38" stroke-width="3"/>
+<rect x="44" y="44" width="912" height="912" fill="none" stroke="#ffffff" stroke-opacity="0.08"/>
+<g transform="translate(110 205) scale(2.7857)" filter="url(#hue)">
+<ellipse fill="#efb84b" opacity="0.18" cx="140" cy="116" rx="77" ry="37"/><path fill="#080a0c" d="M61 145h14v-16h10v-14h13V98h12V73h-9V50h14v9h13V43h10v10h10V39h14v18h14V45h13v13h12v19h13v26h14v13h15v12h15v10H61z"/><path fill="#46d9c7" d="M81 137v-18h18v-15h14V78h-7V61h14v12h14V55h15v18h15v-17h12v28h13v27h14v11h23v10h20v5H81z"/><path fill="#159a91" d="M81 137v-18h18V98h19v28h24v11H81z"/><path fill="#ff734f" d="M82 61h13v12h9v17H91V79H82zM190 61h14v11h9v14h-14V76h-9z"/><path fill="#ff9860" d="M205 117h28v9h13v7h-24v-5h-17z"/><path fill="#fcf6b7" d="M118 87h11v10h-11zM173 84h11v10h-11z"/><path fill="#fff9e1" d="M121 88h4v4h-4zM176 85h4v4h-4z"/><path fill="#4e2b5d" d="M138 99h11v19h-11zM155 102h8v14h-8z"/><path fill="#11151a" d="M104 141h78v8h-78z"/>
+</g>
+<text x="500" y="838" text-anchor="middle" font-family="sans-serif" font-weight="700" font-size="66" letter-spacing="2" fill="#f5f1e8">SOLVYR</text>
+<text x="500" y="892" text-anchor="middle" font-family="monospace" font-size="30" letter-spacing="7" fill="#efb84b">LEGENDARY · CELESTIAL</text>
+<text x="500" y="940" text-anchor="middle" font-family="monospace" font-size="21" letter-spacing="4" fill="#7c828c">POKEPVP · BNB SMART CHAIN</text>
+</svg>

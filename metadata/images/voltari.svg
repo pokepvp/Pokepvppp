@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1000" viewBox="0 0 1000 1000">
+<defs>
+<radialGradient id="stage" cx="0.5" cy="0.43" r="0.55"><stop offset="0" stop-color="#efb84b" stop-opacity="0.26"/><stop offset="1" stop-color="#efb84b" stop-opacity="0"/></radialGradient>
+<pattern id="grid" width="62" height="62" patternUnits="userSpaceOnUse"><path d="M62 0H0V62" fill="none" stroke="#ffffff" stroke-opacity="0.03"/></pattern>
+
+</defs>
+<rect width="1000" height="1000" fill="#0d0e11"/>
+<rect width="1000" height="1000" fill="url(#stage)"/>
+<rect width="1000" height="1000" fill="url(#grid)"/>
+<rect x="28" y="28" width="944" height="944" fill="none" stroke="#d09a38" stroke-width="3"/>
+<rect x="44" y="44" width="912" height="912" fill="none" stroke="#ffffff" stroke-opacity="0.08"/>
+<g transform="translate(110 205) scale(2.7857)">
+<ellipse fill="#efb84b" opacity="0.18" cx="140" cy="113" rx="76" ry="39"/><path fill="#080a0c" d="M69 145h16v-9h14v-9h14v-8h18V99h-9V78h-9V54h11v8h11v-17h10v-10h12v10h13v18h11V55h11v-10h11v28h-8v17h-10v26h20v9h17v10h20v10h17v10H69z"/><path fill="#46d9c7" d="M91 137v-16h14v-13h16V91h-8V71h11v11h11V55h16v18h11V58h10v23h12v30h14v8h18v10h20v8h-55v-8h-20v8h-49v10z"/><path fill="#159a91" d="M91 137v-16h14V98h16v22h20v17h-15v9H91z"/><path fill="#ff9860" d="M87 69h15v14h10v18H96V90H87zM180 72h13v14h10v15h-15V91h-8z"/><path fill="#f54e91" d="M201 116h21v9h14v8h-24v-6h-11z"/><path fill="#4e2b5d" d="M126 102h11v16h-11zM158 93h10v22h-10z"/><path fill="#fcf6b7" d="M113 86h10v10h-10zM171 81h10v10h-10z"/><path fill="#fff9e1" d="M116 87h4v4h-4zM174 82h4v4h-4z"/><path fill="#ffe36e" d="M73 121h10v8h8v8H79v-7h-6zM215 50h8v8h8v6h-10v-7h-6z"/><path fill="#11151a" d="M115 141h63v8h-63z"/>
+</g>
+<text x="500" y="838" text-anchor="middle" font-family="sans-serif" font-weight="700" font-size="66" letter-spacing="2" fill="#f5f1e8">VOLTARI</text>
+<text x="500" y="892" text-anchor="middle" font-family="monospace" font-size="30" letter-spacing="7" fill="#efb84b">LEGENDARY · ARC</text>
+<text x="500" y="940" text-anchor="middle" font-family="monospace" font-size="21" letter-spacing="4" fill="#7c828c">POKEPVP · BNB SMART CHAIN</text>
+</svg>
