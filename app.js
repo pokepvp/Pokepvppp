@@ -418,3 +418,6 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 async function copyPrompt() { const value = currentAgentPrompt(); try { await navigator.clipboard.writeText(value); showToast('Agent prompt copied'); } catch { showToast(value); } }
+
+// Installable web app: register the service worker (network-first, cache is only an offline fallback).
+if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(() => {}); }); }
