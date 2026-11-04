@@ -76,7 +76,7 @@
   "maxEpochs": 11,
   "halving": "Reward halves at every era boundary (Era 1 = 100%, Era 2 = 50%, Era 3 = 25%, ...). Accrued $PVP is never reduced."
  },
- "gate": "None — open minting for any wallet. The Starter edition additionally requires that the wallet has not used its free mint (freeUsed).",
+ "gate": "No allowlist — any wallet may mint while the owner has the mint open (mintOpen() = true). The Starter edition additionally requires that the wallet has not used its free mint (freeUsed).",
  "liveStatus": "deployed — mint closed (the owner opens it at launch)",
  "deploymentStatus": "Deployed on BNB Chain mainnet 2026-11-04 and verified on-chain: NFT runtime matches the locally tested build (36 of 36 checks), $PVP supply 1,000,000,000 with 600,000,000 in the NFT contract as the mining reserve and 400,000,000 held by the owner. Minting starts closed; the owner opens it with setMintOpen(true).",
  "contractAddress": "0xFe565C3Dda51eC386263d3955e5455123A50477f",

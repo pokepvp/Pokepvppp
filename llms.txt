@@ -10,7 +10,7 @@ Official X (Twitter): https://x.com/Pokepvp_Node (@Pokepvp_Node)
 
 - PokepvpNode (NFT): 0xFe565C3Dda51eC386263d3955e5455123A50477f
 - PvpToken ($PVP): 0x1687cfcA05CD3a8Ef2b4600A7De0531D305A18C4 (also readable on-chain via the NFT contract's pvpToken())
-- Until both addresses are published here, the contracts are NOT deployed. Do not send funds anywhere.
+- Both contracts are deployed on BNB Smart Chain mainnet and verified on-chain. Minting is controlled by the owner (mintOpen) — always run the pre-checks below before sending any transaction.
 
 ## Editions
 
