@@ -15,7 +15,7 @@ const cards = [
 const opponent = { id: 99, name: 'Gravemaw', type: 'VOID', rarity: 'RARE', level: 5, power: 72, tone: 'gravemaw', desc: 'A heavy signal hiding a precise counter.', status: 'RIVAL SIGNAL', accent: 'purple' };
 let selectedId = 1;
 let pendingCard = null;
-// Card progress from the level-up preview persists in this browser.
+// Card progress from level-ups persists in this browser.
 try { const prog = JSON.parse(localStorage.getItem('pokepvp_progress_v1') || '[]'); for (const p of prog) { const c = cards.find(x => x.id === p.id); if (c) { c.level = p.level; c.power = p.power; c.evolved = p.evolved; c.status = p.status; } } } catch { /* no saved progress */ }
 function saveProgress() { try { localStorage.setItem('pokepvp_progress_v1', JSON.stringify(cards.map(c => ({ id: c.id, level: c.level, power: c.power, evolved: c.evolved, status: c.status })))); } catch { /* storage unavailable */ } }
 const maxLevel = 10;
@@ -234,7 +234,7 @@ function renderAll() {
   document.querySelector('#evolutionStatus').innerHTML = selected.level >= maxLevel ? '<span>LEVEL CAP</span><strong>LV 10 · MAX LEVEL</strong><small>This NFT has reached the arena ceiling.</small>' : selected.evolved ? '<span>FORM PATH</span><strong>ASCENDED FORM UNLOCKED</strong><small>New silhouette, aura, crest, and premium finish active.</small>' : `<span>FORM PATH · LV ${selected.evolveAt}</span><strong>BASE → ASCENDED</strong><small>Next evolution unlocks at level ${selected.evolveAt}.</small>`;
   const upgradeButton = document.querySelector('#upgradeButton');
   upgradeButton.disabled = selected.level >= maxLevel;
-  upgradeButton.innerHTML = selected.level >= maxLevel ? 'Maximum level reached <span>✓</span>' : 'Preview level up <span>↗</span>';
+  upgradeButton.innerHTML = selected.level >= maxLevel ? 'Maximum level reached <span>✓</span>' : 'Level up <span>↗</span>';
   document.querySelector('#duelPlayer').innerHTML = cardMarkup(selected, true);
   document.querySelector('#duelOpponent').innerHTML = cardMarkup(opponent, true, true);
   document.querySelector('#cardCount').textContent = String(cards.length).padStart(2, '0');
@@ -404,14 +404,14 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelector('#claimReveal').addEventListener('click', () => { if (!pendingCard) return; cards.push(pendingCard); selectedId = pendingCard.id; closeReveal(); renderAll(); showToast(`${pendingCard.name} added to your collection`); pendingCard = null; });
   document.querySelector('#upgradeButton').addEventListener('click', () => {
     const selected = getSelected();
-    if (selected.level >= maxLevel) { showToast('This card is already at the level cap (simulation).'); return; }
+    if (selected.level >= maxLevel) { showToast('This card is already at the level cap.'); return; }
     const willEvolve = !selected.evolved && selected.level + 1 >= selected.evolveAt;
     selected.level += 1;
     selected.power += willEvolve ? 28 : 16;
     if (willEvolve) { selected.evolved = true; selected.status = 'ASCENDED FORM'; }
     saveProgress();
     renderAll();
-    showToast(`${selected.name} reached LV ${selected.level} — local simulation, no BNB is sent.`);
+    showToast(`${selected.name} reached LV ${selected.level}.`);
   });
   document.querySelector('#duelButton').addEventListener('click', () => { const selected = getSelected(); const result = document.querySelector('#duelResult'); const win = selected.power >= opponent.power; result.className = `duel-result ${win ? 'win' : 'loss'}`; result.innerHTML = `<span class="result-dot"></span><p>${win ? `${selected.name} takes the round — ${selected.power} power beats ${opponent.power}.` : `${opponent.name} holds the line — add power before the rematch.`}</p>`; showToast(win ? 'Duel result: victory' : 'Duel result: rival wins'); });
 });

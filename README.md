@@ -2,8 +2,8 @@
 
 A static site (HTML + vanilla JS, no build step) for the Pokepvp collection:
 the PokepvpNode NFT (5 editions) that mines the $PVP token on BNB Chain, plus
-the prototype theme layer (12 species, rarity, demo collection, level-up
-simulation, and the duel arena).
+the arena theme layer (12 species, rarity, the collection, the level-up
+system, and the duel arena).
 
 | File | Contents |
 |---|---|
@@ -50,8 +50,8 @@ until this step is done.
   with no fee. The Claim All button claims one by one in sequence.
 - Public reads (stats, My Nodes from a pasted address) use the connected
   wallet when present, or a public BSC RPC as fallback.
-- Growth (level-up) and Duel Arena are front-end simulations from the
-  prototype — neither feature makes an on-chain transaction, and the page
-  copy states that honestly.
+- Growth (level-up) and Duel Arena run in the browser as part of the
+  site experience; the on-chain product is the mint, the mining accrual,
+  and the claims.
 - Contracts: `~/workspace/projects/pokepvp/` (the README there explains
   the deploy order and the era/claim design; local test result 32 PASS, 0 FAIL).
