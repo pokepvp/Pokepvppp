@@ -4,6 +4,7 @@ Pokepvp Creature (PKVP) is an ERC-721 collection on BNB Smart Chain (chainId 56 
 Every node mines the $PVP ERC-20 every second from the moment it is minted.
 The edition of a node is set by the price paid at mint — never by random rarity.
 Machine-readable manifest (JSON): https://pokepvp.fun/mint.json
+Official X (Twitter): https://x.com/Pokepvp_Node (@Pokepvp_Node)
 
 ## Contracts
 
