@@ -15,13 +15,9 @@ const cards = [
 const opponent = { id: 99, name: 'Gravemaw', type: 'VOID', rarity: 'RARE', level: 5, power: 72, tone: 'gravemaw', desc: 'A heavy signal hiding a precise counter.', status: 'RIVAL SIGNAL', accent: 'purple' };
 let selectedId = 1;
 let pendingCard = null;
-let material = 4;
-// Simulation state (material + card progress) persists in this browser.
-try { const savedMat = Number(localStorage.getItem('pokepvp_material_v1')); if (Number.isFinite(savedMat) && savedMat >= 0) material = savedMat; } catch { /* storage unavailable */ }
+// Card progress from the level-up preview persists in this browser.
 try { const prog = JSON.parse(localStorage.getItem('pokepvp_progress_v1') || '[]'); for (const p of prog) { const c = cards.find(x => x.id === p.id); if (c) { c.level = p.level; c.power = p.power; c.evolved = p.evolved; c.status = p.status; } } } catch { /* no saved progress */ }
-function saveSimState() { try { localStorage.setItem('pokepvp_material_v1', String(material)); localStorage.setItem('pokepvp_progress_v1', JSON.stringify(cards.map(c => ({ id: c.id, level: c.level, power: c.power, evolved: c.evolved, status: c.status })))); } catch { /* storage unavailable */ } }
-function supplyReady() { try { return Date.now() - Number(localStorage.getItem('pokepvp_supply_ts') || 0) >= 86400000; } catch { return true; } }
-function updateSupplyButton() { const b = document.querySelector('#dailySupplyButton'); if (!b) return; const ready = supplyReady(); b.disabled = !ready; b.innerHTML = ready ? 'Claim daily supply · +2 material <span>↗</span>' : 'Daily supply claimed · back in 24h <span>✓</span>'; }
+function saveProgress() { try { localStorage.setItem('pokepvp_progress_v1', JSON.stringify(cards.map(c => ({ id: c.id, level: c.level, power: c.power, evolved: c.evolved, status: c.status })))); } catch { /* storage unavailable */ } }
 const maxLevel = 10;
 // ── Contract configuration ──────────────────────────────────────────
 // Addresses are filled in AFTER the owner deploys both contracts via deploy.html.
@@ -244,9 +240,6 @@ function renderAll() {
   const supplyByRarity = ['COMMON', 'RARE', 'LEGENDARY'].reduce((result, rarity) => { result[rarity] = cards.filter(card => card.rarity === rarity).reduce((sum, card) => sum + card.supply, 0); return result; }, {});
   const mintedByRarity = ['COMMON', 'RARE', 'LEGENDARY'].reduce((result, rarity) => { result[rarity] = cards.filter(card => card.rarity === rarity).reduce((sum, card) => sum + card.minted, 0); return result; }, {});
   ['common', 'rare', 'legendary'].forEach(rarity => { document.querySelector(`#supply-${rarity}`).textContent = `${mintedByRarity[rarity.toUpperCase()]}/${supplyByRarity[rarity.toUpperCase()]}`; });
-  document.querySelector('#materialCount').textContent = String(material).padStart(2, '0');
-  const costEl = document.querySelector('#upgradeCost'); if (costEl) costEl.textContent = selected.level >= maxLevel ? '— · max level' : `01 material · you have ${String(material).padStart(2, '0')}`;
-  updateSupplyButton();
   document.querySelectorAll('[data-card-id]').forEach(el => el.addEventListener('click', () => { selectedId = Number(el.dataset.cardId); renderAll(); showToast(`${getSelected().name} is now your active card`); }));
 }
 let currentNodesAddress = '';
@@ -411,18 +404,15 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelector('#upgradeButton').addEventListener('click', () => {
     const selected = getSelected();
     if (selected.level >= maxLevel) { showToast('This card is already at the level cap (simulation).'); return; }
-    if (material < 1) { showToast('Out of simulation material — level up cannot continue.'); return; }
-    material -= 1;
     const willEvolve = !selected.evolved && selected.level + 1 >= selected.evolveAt;
     selected.level += 1;
     selected.power += willEvolve ? 28 : 16;
     if (willEvolve) { selected.evolved = true; selected.status = 'ASCENDED FORM'; }
-    saveSimState();
+    saveProgress();
     renderAll();
     showToast(`${selected.name} reached LV ${selected.level} — local simulation, no BNB is sent.`);
   });
-  document.querySelector('#dailySupplyButton')?.addEventListener('click', () => { if (!supplyReady()) { showToast('Daily supply already claimed — it refills every 24 hours.'); return; } material += 2; try { localStorage.setItem('pokepvp_supply_ts', String(Date.now())); } catch { /* storage unavailable */ } saveSimState(); renderAll(); showToast('Daily supply claimed — +2 material'); });
-  document.querySelector('#duelButton').addEventListener('click', () => { const selected = getSelected(); const result = document.querySelector('#duelResult'); const win = selected.power >= opponent.power; if (win) { material += 1; saveSimState(); renderAll(); } result.className = `duel-result ${win ? 'win' : 'loss'}`; result.innerHTML = `<span class="result-dot"></span><p>${win ? `${selected.name} takes the round — ${selected.power} power beats ${opponent.power}.` : `${opponent.name} holds the line — add power before the rematch.`}</p>`; showToast(win ? 'Duel victory — +1 material earned' : 'Duel result: rival wins'); });
+  document.querySelector('#duelButton').addEventListener('click', () => { const selected = getSelected(); const result = document.querySelector('#duelResult'); const win = selected.power >= opponent.power; result.className = `duel-result ${win ? 'win' : 'loss'}`; result.innerHTML = `<span class="result-dot"></span><p>${win ? `${selected.name} takes the round — ${selected.power} power beats ${opponent.power}.` : `${opponent.name} holds the line — add power before the rematch.`}</p>`; showToast(win ? 'Duel result: victory' : 'Duel result: rival wins'); });
 });
 
 async function copyPrompt() { const value = currentAgentPrompt(); try { await navigator.clipboard.writeText(value); showToast('Agent prompt copied'); } catch { showToast(value); } }
