@@ -29,7 +29,7 @@ contract PokepvpNode {
     // ---------- Collection / mint state ----------
     uint256 public constant MAX_SUPPLY = 10_000;
     uint256 public totalMinted; // also the last issued token ID (IDs are sequential from 1)
-    bool public mintOpen = true;
+    bool public mintOpen = false; // starts closed at deployment; the owner opens it with setMintOpen(true)
 
     // Editions: 0 Starter, 1 Bronze, 2 Silver, 3 Gold, 4 Diamond.
     // editionPrice is the exact BNB a mint of that edition must pay (wei).
