@@ -55,6 +55,8 @@ const SEL = {
   pendingOf: "0x7e7feaa7",     // pendingOf(uint256)
   era: "0x143e55e0",           // era()
   totalHashRate: "0xda3b6b35", // totalHashRate()
+  eraShares: "0x5fb471d6",     // eraShares()
+  eraStarts: "0xf64d39a9",     // eraStarts(uint256)
   tokensOfOwner: "0x8462151c", // tokensOfOwner(address)
   pvpToken: "0x12bbb811",      // pvpToken()
   balanceOf: "0x70a08231"      // ERC-20 balanceOf(address)
@@ -94,7 +96,9 @@ function formatPVP(wei) {
   const wholeText = whole.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   return frac ? `${wholeText}.${frac}` : wholeText;
 }
-function paintTokenContract(addr) { const el = document.querySelector('#tokenContract'); if (el && addr) el.textContent = addr; }
+function paintTokenContract(addr) { const el = document.querySelector('#tokenContract'); if (el && addr) el.textContent = addr; paintVerifyLinks(); }
+function paintVerifyLinks() { const el = document.querySelector('#verifyLinks'); if (!el) return; const parts = []; if (contractsReady()) parts.push(`<a href="https://bscscan.com/address/${NFT_CONTRACT_ADDRESS}#readContract" target="_blank" rel="noopener">NFT on BscScan</a>`); if (tokenAddressCache) parts.push(`<a href="https://bscscan.com/address/${tokenAddressCache}#readContract" target="_blank" rel="noopener">$PVP on BscScan</a>`); el.innerHTML = parts.length ? ' ' + parts.join(' · ') : ''; }
+function paintNftContract() { const el = document.querySelector('#nftContract'); if (el && contractsReady()) el.textContent = NFT_CONTRACT_ADDRESS; paintVerifyLinks(); }
 let tokenAddressCache = '';
 async function resolveTokenAddress() {
   if (validContractAddress(TOKEN_CONTRACT_ADDRESS)) { paintTokenContract(TOKEN_CONTRACT_ADDRESS); return TOKEN_CONTRACT_ADDRESS; }
@@ -250,15 +254,19 @@ async function refreshChainStats() {
   const rail = document.querySelector('#railState');
   if (!contractsReady()) { if (rail) rail.textContent = 'Contract not configured yet'; return; }
   try {
-    const [minted, eraNow, totalRate] = await Promise.all([
+    const [minted, eraNow, totalRate, eraSharesNow] = await Promise.all([
       readUint(NFT_CONTRACT_ADDRESS, SEL.totalMinted),
       readUint(NFT_CONTRACT_ADDRESS, SEL.era),
-      readUint(NFT_CONTRACT_ADDRESS, SEL.totalHashRate)
+      readUint(NFT_CONTRACT_ADDRESS, SEL.totalHashRate),
+      readUint(NFT_CONTRACT_ADDRESS, SEL.eraShares)
     ]);
     document.querySelector('#heroMinted').textContent = minted.toString();
     document.querySelector('#statEra').textContent = `Era ${eraNow.toString()}`;
     document.querySelector('#statHashRate').textContent = `${formatPVP(totalRate)} $PVP`;
     document.querySelector('#statMinted').textContent = `${minted.toString()} / 10,000`;
+    document.querySelector('#statEraProgress').textContent = `${formatPVP(eraSharesNow)} / 150,000`;
+    paintNftContract();
+    try { const startTs = await readUint(NFT_CONTRACT_ADDRESS, SEL.eraStarts + encUint(eraNow - 1n)); const nowS = BigInt(Math.floor(Date.now() / 1000)); if (startTs > 0n && startTs <= nowS) { const end = new Date(Number(startTs + 2592000n) * 1000); const note = document.querySelector('#statEraNote'); if (note) note.textContent = `hash rate minted this era, of the 150,000 era cap · era ${eraNow} ends by ${end.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })} at the latest`; } } catch { /* era start not recorded yet */ }
     if (rail) rail.textContent = 'Arena systems nominal';
     const token = await resolveTokenAddress();
     if (token) {
@@ -297,9 +305,11 @@ async function loadNodes(address, silent = false) {
     if (!ids.length) {
       list.innerHTML = '<p class="nodes-empty">No nodes found for this address yet — mint one in the Mint Lab above.</p>';
       document.querySelector('#nodesPending').textContent = '0 $PVP';
+      document.querySelector('#nodesRate').textContent = '0 $PVP/day';
       return;
     }
     let totalPending = 0n;
+    let totalRate = 0n;
     const rows = [];
     for (const id of ids) {
       const [ed, rate, pending] = await Promise.all([
@@ -308,11 +318,13 @@ async function loadNodes(address, silent = false) {
         readUint(NFT_CONTRACT_ADDRESS, SEL.pendingOf + encUint(id))
       ]);
       totalPending += pending;
+      totalRate += rate;
       const edition = EDITIONS[Number(ed)] || EDITIONS[0];
       rows.push(`<div class="node-row"><div class="node-main"><b>Node #${id}</b><span class="node-edition">${edition.name}</span></div><div class="node-stat"><span>HASH RATE</span><b>${formatPVP(rate)} $PVP/day</b></div><div class="node-stat"><span>PENDING</span><b>${formatPVP(pending)} $PVP</b></div><button class="button button-gold node-claim" data-claim="${id}" ${pending === 0n ? 'disabled' : ''}>Claim</button></div>`);
     }
     list.innerHTML = rows.join('');
     document.querySelector('#nodesPending').textContent = `${formatPVP(totalPending)} $PVP`;
+    document.querySelector('#nodesRate').textContent = `${formatPVP(totalRate)} $PVP/day`;
     const token = await resolveTokenAddress();
     if (token) {
       const mine = await readUint(token, SEL.balanceOf + encAddress(address));

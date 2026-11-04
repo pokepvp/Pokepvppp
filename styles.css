@@ -36,7 +36,7 @@
 .prompt-controls label{font:500 10px var(--mono);letter-spacing:.14em;color:var(--gold)}
 .prompt-controls select{background:#0c0e11;color:var(--cream);border:1px solid #363a42;font:500 12px var(--mono);padding:10px 12px;max-width:100%}
 #agentPromptText{display:block;white-space:pre-wrap;word-break:break-word;background:#0c0e11;border:1px solid #2a2e35;color:var(--soft);font:12px/1.65 var(--mono);padding:14px 15px;margin:0 0 14px}
-.supply-strip.mining-stats{grid-template-columns:repeat(4,1fr)}
+.supply-strip.mining-stats{grid-template-columns:repeat(5,1fr)}
 .nodes-panel{margin-top:6px}
 .nodes-controls{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:18px 0 14px}
 .nodes-controls input{flex:1;min-width:260px;background:#0c0e11;border:1px solid #363a42;color:var(--cream);font:12px var(--mono);padding:13px 14px}

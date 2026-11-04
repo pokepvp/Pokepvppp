@@ -139,13 +139,14 @@
       <section class="section-shell content-section" id="mining">
         <div class="section-heading">
           <div><p class="eyebrow"><span class="eyebrow-line"></span> 02 / MINING</p><h2>Your nodes mine $PVP.</h2></div>
-          <p>Every Pokepvp node mines $PVP every second from the moment it is minted. An era halves the rate every 30 days — or once 150,000 shares are minted inside the era — up to 11 eras. Claim any time, no fee, no deadline.</p>
+          <p>Every Pokepvp node mines $PVP every second from the moment it is minted. An era halves the rate every 30 days — or once 150,000 shares are minted inside the era — up to 11 eras. Claim any time, no fee, no deadline. Accrual follows one formula: combined hash rate × seconds held × the current era multiplier (era 1 = ×1, era 2 = ×½, halving from there).</p>
         </div>
         <div class="supply-strip mining-stats" aria-label="Mining network stats">
           <div class="supply-cell"><span>CURRENT ERA</span><strong id="statEra">—</strong><small>rate halves each era</small></div>
           <div class="supply-cell"><span>TOTAL HASH RATE</span><strong id="statHashRate">—</strong><small>$PVP mined per day, network-wide</small></div>
           <div class="supply-cell"><span>MINTED</span><strong id="statMinted">—</strong><small>of 10,000 nodes</small></div>
           <div class="supply-cell"><span>MINING POOL</span><strong id="statPool">—</strong><small>$PVP reserve held by the NFT contract</small></div>
+          <div class="supply-cell"><span>ERA PROGRESS</span><strong id="statEraProgress">—</strong><small id="statEraNote">hash rate minted this era, of the 150,000 era cap</small></div>
         </div>
         <article class="panel-block nodes-panel">
           <div class="panel-kicker"><span class="eyebrow-line"></span> MY NODES · ON-CHAIN</div>
@@ -155,7 +156,7 @@
             <button class="button button-dark" id="loadNodesBtn" type="button">Load nodes</button>
             <button class="button button-gold" id="claimAllBtn" type="button">Claim all</button>
           </div>
-          <div class="nodes-totals"><span>NODES <b id="nodesCount">0</b></span><span>TOTAL PENDING <b id="nodesPending">0 $PVP</b></span><span class="nodes-note">Pending yield follows the token if it is transferred.</span></div>
+          <div class="nodes-totals"><span>NODES <b id="nodesCount">0</b></span><span>TOTAL PENDING <b id="nodesPending">0 $PVP</b></span><span>COMBINED HASH RATE <b id="nodesRate">0 $PVP/day</b></span><span class="nodes-note">Pending yield follows the token if it is transferred.</span></div>
           <div class="nodes-list" id="nodesList"><p class="nodes-empty">Connect your wallet or enter an address to load its nodes.</p></div>
         </article>
       </section>
@@ -171,8 +172,10 @@
           <div class="supply-cell"><span>PROJECT TREASURY</span><strong>400,000,000</strong><small>40% — held by the project owner</small></div>
           <div class="supply-cell"><span>CLAIMS</span><strong>Any time</strong><small>no fee · no deadline · no lock</small></div>
         </div>
-        <p class="catalog-note">Every $PVP a collector will ever hold comes from exactly two places: the mining pool, earned second by second by live nodes, or the treasury allocation set at launch. Rates halve each era — after 30 days or 150,000 shares minted inside the era — across a maximum of 11 eras.</p>
+        <p class="catalog-note">Every $PVP a collector will ever hold comes from exactly two places: the mining pool, earned second by second by live nodes, or the treasury allocation set at launch. Rates halve each era — after 30 days or 150,000 shares minted inside the era — across a maximum of 11 eras. Nothing on this page is a promise of return — $PVP exists only as this mining ledger, earned by live nodes.</p>
         <p class="catalog-note">TOKEN CONTRACT — <b id="tokenContract">not deployed yet · the address appears here once the contracts are deployed and wired</b></p>
+        <p class="catalog-note">NFT CONTRACT — <b id="nftContract">not deployed yet · the address appears here once the contracts are deployed and wired</b></p>
+        <p class="catalog-note">VERIFY IT YOURSELF — every figure on this page is a public read on the contracts' BscScan Read tab, no wallet and no gas needed: <b>totalMinted</b> · <b>era</b> · <b>totalHashRate</b> · <b>eraShares</b> · the NFT contract's $PVP balance.<span id="verifyLinks"></span></p>
       </section>
       <section class="section-shell content-section" id="collection">
         <div class="section-heading collection-heading">
