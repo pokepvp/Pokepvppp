@@ -354,7 +354,7 @@ function buildAgentPrompt(editionIndex) {
   const valueNote = editionIndex === 0 ? 'Starter is free: send exactly 0 BNB (gas only).' : 'Send exactly that amount — the full edition price, nothing extra.';
   return `Mint 1 Pokepvp Creature NFT on BNB Chain — edition ${editionIndex} (${edition.name}).
 Contract: ${address}.
-First check on-chain: mintOpen() = true, ${starterCheck}and editionPrice(${editionIndex}) = ${edition.priceBNB} BNB.
+First check on-chain: mintOpen() = true, totalMinted() < 10000, ${starterCheck}and editionPrice(${editionIndex}) = ${edition.priceBNB} BNB.
 If any check fails, stop and tell me — never switch editions or pay a different amount.
 Then call mint(${editionIndex}) with exactly ${edition.priceBNB} BNB as the transaction value, gasLimit 600000. ${valueNote}
 The node mines ${edition.ratePerDay} $PVP per day from the moment it is minted; claim mined $PVP any time with claim(tokenId).
