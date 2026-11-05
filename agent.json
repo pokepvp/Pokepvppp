@@ -1,0 +1,31 @@
+{
+  "type": "https://eips.ethereum.org/EIPS/eip-8004#registration-v1",
+  "name": "Pokepvp",
+  "description": "Creature-card NFT nodes on BNB Chain that mine the $PVP token. Mint a PokepvpNode NFT in one of five editions priced by payment (Starter free, max 1 per wallet; Bronze 0.000284, Silver 0.000709, Gold 0.00142, Diamond 0.00426 BNB); every NFT mines $PVP per second at an edition rate, with era halvings. Machine-readable spec: llms.txt and mint.json on the official site.",
+  "image": "https://pokepvp.fun/og.png",
+  "services": [
+    {
+      "name": "web",
+      "endpoint": "https://pokepvp.fun"
+    },
+    {
+      "name": "llms.txt",
+      "endpoint": "https://pokepvp.fun/llms.txt"
+    },
+    {
+      "name": "mint.json",
+      "endpoint": "https://pokepvp.fun/mint.json"
+    }
+  ],
+  "registrations": [],
+  "properties": {
+    "chainId": 56,
+    "network": "BNB Chain (BSC mainnet)",
+    "contracts": {
+      "PokepvpNode (NFT)": "0xFe565C3Dda51eC386263d3955e5455123A50477f",
+      "PVPToken ($PVP)": "0x1687cfcA05CD3a8Ef2b4600A7De0531D305A18C4"
+    },
+    "officialSite": "https://pokepvp.fun",
+    "x": "@Pokepvp_Node"
+  }
+}
