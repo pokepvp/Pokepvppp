@@ -384,11 +384,12 @@ function buildAgentPrompt(editionIndex) {
   const address = contractsReady() ? NFT_CONTRACT_ADDRESS : '<POKEPVP_NODE_CONTRACT_ADDRESS \u2014 filled in after deployment>';
   const priceText = editionIndex === 0 ? 'FREE' : `${edition.priceBNB} BNB`;
   const checks = editionIndex === 0
-    ? 'Check mintOpen() = true and freeUsed(your wallet) = false'
-    : `Check mintOpen() = true and editionPrice(${editionIndex}) = ${edition.priceBNB} BNB`;
-  return `Mint 1 Pokepvp NFT (${edition.name}, ${priceText}) on BNB Chain.
+    ? 'mintOpen()=true · freeUsed(you)=false'
+    : `mintOpen()=true · editionPrice(${editionIndex})=${edition.priceWei} wei`;
+  return `Mint 1 Pokepvp NFT — ${edition.name} (${priceText}) — BNB Chain (56).
 Contract: ${address}
-${checks}, then call mint(${editionIndex}) with ${edition.priceBNB} BNB, gasLimit 600000. It mines ${edition.ratePerDay} $PVP/day. Reply with the tx link.`;
+Call mint(${editionIndex}) · selector 0x6ecd2306 · value ${edition.priceWei} wei (${edition.priceBNB} BNB) · gasLimit 600000.
+Check first: ${checks}. No approvals. It mines ${edition.ratePerDay} $PVP/day. Reply with the tx link only.`;
 }
 function currentAgentPrompt() { const sel = document.querySelector('#promptEdition'); return buildAgentPrompt(sel ? Number(sel.value) : 1); }
 function renderAgentPrompt() { const el = document.querySelector('#agentPromptText'); if (el) el.textContent = currentAgentPrompt(); }

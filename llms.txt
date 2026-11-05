@@ -12,9 +12,10 @@ Mint opened by the owner on 2026-11-04. mintOpen() returns true on-chain - agent
 
 ## Quick command (copy-paste for AI agents)
 
-Mint 1 Pokepvp NFT (Starter, FREE) on BNB Chain.
+Mint 1 Pokepvp NFT — Starter (FREE) — BNB Chain (56).
 Contract: 0xFe565C3Dda51eC386263d3955e5455123A50477f
-Check mintOpen() = true and freeUsed(your wallet) = false, then call mint(0) with 0 BNB, gasLimit 600000. Reply with the tx link.
+Call mint(0) · selector 0x6ecd2306 · value 0 wei · gasLimit 600000.
+Check first: mintOpen()=true · freeUsed(you)=false. No approvals. It mines 10 $PVP/day. Reply with the tx link only.
 
 For paid editions use the same shape with mint(1..4) and the exact prices in the Editions table below.
 
